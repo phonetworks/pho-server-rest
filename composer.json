@@ -1,0 +1,12 @@
+{
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "esokullu/react-restify": "dev-master",
+        "phonetworks/pho-microkernel": "@dev"
+    },
+    "require-dev": {
+	    "phonetworks/pho-kernel": "@dev",
+        "psy/psysh": "*"
+    }
+}
