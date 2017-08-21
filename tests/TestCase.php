@@ -9,16 +9,27 @@
  * file that was distributed with this source code.
  */
 
-namespace Pho\Lib\Graph;
-
 class TestCase extends \PHPUnit\Framework\TestCase 
 {
+    protected $client;
+    const HOST = "http://localhost:1337";
 
     public function setUp() {
-        $this->graph = new Graph();
+        `php ../run.php`;
+        sleep(0.1);
+        $this->client = new \GuzzleHttp\Client();
     }
 
     public function tearDown() {
-        unset($this->graph);
+        //unset($this->graph);
     }
+    
+    protected function get(string $path, bool $headers=false) {
+        $res = $this->client->request('GET', self::HOST.$path);
+        if($headers)
+            return $res;
+        $body = json_decode($res->getBody(), true);
+        return $body;
+    }
+
 }
