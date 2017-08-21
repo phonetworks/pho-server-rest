@@ -1,22 +1,6 @@
 <?php
 
 require "vendor/autoload.php";
-/*
-include("src/Pho/Server/Controllers/AbstractController.php");
-include("src/Pho/Server/Controllers/EntityController.php");
-include("src/Pho/Server/Controllers/NodeController.php");
-include("src/Pho/Server/Controllers/KernelController.php");
-include("src/Pho/Server/Server.php");
-include("src/Pho/Server/Daemon.php");
-*/
-spl_autoload_register(function ($class_name) {
-  if(strpos($class_name,"Pho\\Server\\Rest\\")!==0)
-    return;
-  $class_name = str_replace("\\", "/", substr($class_name, strlen("Pho\\Server\\Rest\\")));
-  $class_file = __DIR__."/src/Pho/Server/Rest/".$class_name.".php";
-  if(file_exists($class_file))
-    include($class_file);
-});
 
 $configs = array(
     "services"=>array(

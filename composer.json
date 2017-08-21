@@ -1,12 +1,45 @@
 {
+    "name": "phonetworks/pho-server-rest",
+  "type": "library",
+  "description": "A REST based management API for the Pho Kernel.",
+   "keywords": [
+        "graph",
+        "server",
+        "api",
+        "rest",
+        "reactphp",
+        "react",
+        "pho"
+    ],
+  "homepage": "https://phonetworks.org",
+  "license": "MIT",
+  "authors": [
+        {
+            "name": "Emre Sokullu",
+            "email": "emre@phonetworks.org",
+            "homepage": "http://www.emresokullu.com"
+        }
+    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
+        "php":">=7.1.0",
         "esokullu/react-restify": "dev-master",
         "phonetworks/pho-microkernel": "@dev"
     },
     "require-dev": {
+        "phpunit/phpunit": "^5.7",
 	    "phonetworks/pho-kernel": "@dev",
         "psy/psysh": "*"
+    },
+     "autoload": {
+	     "psr-4": {
+		       "Pho\\Server\\Rest\\": "src/Pho/Server/Rest/"
+	     }
+    },
+    "autoload-dev": {
+	     "psr-4": {
+		       "Pho\\Server\\Rest\\": "tests/"
+	     }
     }
 }
