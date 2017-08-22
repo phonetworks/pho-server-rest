@@ -32,4 +32,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
         return $body;
     }
 
+    protected function post(string $path, array $postData) {
+        $res = $this->client->request('POST', self::HOST.$path, ['form_params' => $postData]);
+        return $res;
+    }
+
+    protected function delete(string $path, array $postData = []) {
+        $res = $this->client->request('DELETE', self::HOST.$path, ['form_params' => $postData]);
+        return $res;
+    }
+
 }
