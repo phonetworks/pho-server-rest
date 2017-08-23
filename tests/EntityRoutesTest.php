@@ -9,23 +9,14 @@
  * file that was distributed with this source code.
  */
 
-class EntityRoutesTest extends TestCase 
+class EntityRoutesTest extends TestCase
 {
+    public $founder_id = '';
 
-    var $founder_id = '';
-    public function setUp(){
-        parent::setUp();
-        $body = $this->get('/founder');
-        if (!isset($body["id"])) {
-            $this->markTestSkipped('Can not get founder id');
-            return;
-        };
-        $this->founder_id = $body["id"];
-    }
+    public function testEntityGetAttributes()
+    {
 
-    public function testEntityGetAttributes() {
-
-        $res = $this->get('/'.$this->founder_id.'/attributes', true);
+        $res = $this->get('/' . $this->founder_id . '/attributes', true);
         $this->assertEquals(200, $res->getStatusCode());
 
         $body = json_decode($res->getBody(), true);
@@ -35,25 +26,27 @@ class EntityRoutesTest extends TestCase
         $this->assertArrayHasKey("About", $body);
     }
 
-
-    public function testGetAttribute() {
-        $body = $this->get('/'.$this->founder_id.'/attribute/About');
+    public function testGetAttribute()
+    {
+        $body = $this->get('/' . $this->founder_id . '/attribute/About');
         $this->assertArrayHasKey("About", $body);
     }
 
-    public function testGetUnexistingAttribute() {
-        $res = $this->get('/'.$this->founder_id.'/attribute/NewAttribute');
+    public function testGetUnexistingAttribute()
+    {
+        $res = $this->get('/' . $this->founder_id . '/attribute/NewAttribute');
         $this->assertEquals(null, $res['NewAttribute']);
     }
 
     /**
      * @depends testEntityGetAttributes
      */
-    public function testEntitySetAttribute() {
+    public function testEntitySetAttribute()
+    {
         $text = 'Some new text';
-        $this->post('/'.$this->founder_id.'/attribute/NewAttribute', ['value' => $text]);
-        
-        $body = $this->get('/'.$this->founder_id.'/attributes');
+        $this->post('/' . $this->founder_id . '/attribute/NewAttribute', ['value' => $text]);
+
+        $body = $this->get('/' . $this->founder_id . '/attributes');
         $this->assertArrayHasKey("NewAttribute", $body);
         $this->assertSame($text, $body['NewAttribute']);
     }
@@ -61,19 +54,21 @@ class EntityRoutesTest extends TestCase
     /**
      * @depends testEntityGetAttributes
      */
-    public function testEntitySetEmptyAttribute() {
+    public function testEntitySetEmptyAttribute()
+    {
         $this->expectException('\GuzzleHttp\Exception\ServerException');
-        $this->post('/'.$this->founder_id.'/attribute/NewAttribute2', ['value' => '']);
+        $this->post('/' . $this->founder_id . '/attribute/NewAttribute2', ['value' => '']);
     }
 
     /**
      * @depends testEntityGetAttributes
      */
-    public function testEntityChangeAttribute() {
+    public function testEntityChangeAttribute()
+    {
         $text = 'Changed text in the attribute';
-        $this->post('/'.$this->founder_id.'/attribute/NewAttribute', ['value' => $text]);
-        
-        $body = $this->get('/'.$this->founder_id.'/attributes');
+        $this->post('/' . $this->founder_id . '/attribute/NewAttribute', ['value' => $text]);
+
+        $body = $this->get('/' . $this->founder_id . '/attributes');
         $this->assertArrayHasKey("NewAttribute", $body);
         $this->assertSame($text, $body['NewAttribute']);
     }
@@ -81,17 +76,19 @@ class EntityRoutesTest extends TestCase
     /**
      * @depends testEntityGetAttributes
      */
-    public function testDeleteAttribute() {
-        $this->delete('/'.$this->founder_id.'/attribute/NewAttribute');
-        
-        $body = $this->get('/'.$this->founder_id.'/attributes');
+    public function testDeleteAttribute()
+    {
+        $this->delete('/' . $this->founder_id . '/attribute/NewAttribute');
+
+        $body = $this->get('/' . $this->founder_id . '/attributes');
         $this->assertNull($body['NewAttribute']);
     }
 
-    public function testDeleteEntity() {
-        $this->delete('/'.$this->founder_id.'/attribute/NewAttribute');
-        
-        $body = $this->get('/'.$this->founder_id.'/attributes');
+    public function testDeleteEntity()
+    {
+        $this->delete('/' . $this->founder_id . '/attribute/NewAttribute');
+
+        $body = $this->get('/' . $this->founder_id . '/attributes');
         $this->assertNull($body['NewAttribute']);
     }
 }
