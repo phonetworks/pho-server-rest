@@ -11,26 +11,51 @@
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
+    protected $proc_stream;
+    protected $pipes = [];
     protected $client;
+    protected $founder_id = '';
+
     const HOST = "http://localhost:1337";
 
     public function setUp()
     {
-        `php ../run.php`;
+        if (!file_exists('tests/logs')) {
+            mkdir('tests/logs');
+        }
+
+        $descriptorspec = array(
+            0 => array("file", 'tests/logs/input.txt', 'w'), // stdin is a pipe that the child will read from
+            1 => array("file", 'tests/logs/output.txt', 'w'), // stdout is a pipe that the child will write to
+            2 => array("file", 'tests/logs/error-output.txt', 'a'), // stderr is a file to write to
+        );
+        
+        $this->proc_stream = proc_open('php ../run.php', $descriptorspec, $this->pipes);
+        //`php ../run.php`; //Can be done bu simple run in anoher proccess, but this proccess can not be kill from there.
+        
         sleep(0.1);
         $this->client = new \GuzzleHttp\Client();
-        
         $body = $this->get('/founder');
+
         if (!isset($body["id"])) {
             $this->markTestSkipped('Can not get founder id');
-            return;
         };
         $this->founder_id = $body["id"];
     }
 
     public function tearDown()
     {
-        //unset($this->graph);
+        if (isset($this->pipes[0]) && is_rsource($this->pipes[0])) fclose($this->pipes[0]);
+        if (isset($this->pipes[1]) && is_rsource($this->pipes[1])) fclose($this->pipes[1]);
+        if (is_resource($this->proc_stream)) proc_close($this->proc_stream);
+    }
+
+    protected function createUser()
+    {
+        if ($this->user) {
+            return $this->user;
+        }
+        
     }
 
     protected function get(string $path, bool $headers = false)
@@ -44,16 +69,26 @@ class TestCase extends \PHPUnit\Framework\TestCase
         return $body;
     }
 
-    protected function post(string $path, array $postData)
+    protected function post(string $path, array $postData, bool $headers = false)
     {
         $res = $this->client->request('POST', self::HOST . $path, ['form_params' => $postData]);
-        return $res;
+        if ($headers) {
+            return $res;
+        }
+
+        $body = json_decode($res->getBody(), true);
+        return $body;
     }
 
-    protected function delete(string $path, array $postData = [])
+    protected function delete(string $path, array $postData = [], bool $headers = false)
     {
         $res = $this->client->request('DELETE', self::HOST . $path, ['form_params' => $postData]);
-        return $res;
+        if ($headers) {
+            return $res;
+        }
+
+        $body = json_decode($res->getBody(), true);
+        return $body;
     }
 
 }

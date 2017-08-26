@@ -11,11 +11,8 @@
 
 class EntityRoutesTest extends TestCase
 {
-    public $founder_id = '';
-
     public function testEntityGetAttributes()
     {
-
         $res = $this->get('/' . $this->founder_id . '/attributes', true);
         $this->assertEquals(200, $res->getStatusCode());
 
@@ -81,7 +78,7 @@ class EntityRoutesTest extends TestCase
         $this->delete('/' . $this->founder_id . '/attribute/NewAttribute');
 
         $body = $this->get('/' . $this->founder_id . '/attributes');
-        $this->assertNull($body['NewAttribute']);
+        $this->assertSame(false, array_key_exists('NewAttribute', $body));
     }
 
     public function testDeleteEntity()
@@ -89,6 +86,6 @@ class EntityRoutesTest extends TestCase
         $this->delete('/' . $this->founder_id . '/attribute/NewAttribute');
 
         $body = $this->get('/' . $this->founder_id . '/attributes');
-        $this->assertNull($body['NewAttribute']);
+        $this->assertSame(false, array_key_exists('NewAttribute', $body));
     }
 }
