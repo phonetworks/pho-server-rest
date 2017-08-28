@@ -25,11 +25,11 @@
     "require": {
         "php":">=7.1.0",
         "esokullu/react-restify": "dev-master",
-        "phonetworks/pho-microkernel": "@dev"
+        "phonetworks/pho-microkernel": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
-	    "phonetworks/pho-kernel": "@dev",
+	    "phonetworks/pho-kernel": "dev-master",
         "fzaninotto/faker": "^1.6",
         "psy/psysh": "*",
         "squizlabs/php_codesniffer": "^2.5",
