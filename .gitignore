@@ -4,5 +4,6 @@ dump.rdb
 /composer.lock
 /.git
 /vendor
+/tests/logs/
 .vagrant
 *.log
