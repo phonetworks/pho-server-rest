@@ -15,7 +15,11 @@ class Router
 
     public static function initGet(Server $server, array $controllers): void
     {
-        $server->get('{uuid}', [$controllers["entity"], "get"])
+        $server->get('entity/{uuid}', [$controllers["entity"], "get"])
+            ->where('uuid', '[0-9a-fA-F\-]{36}');
+        $server->get('edge/{uuid}', [$controllers["edge"], "get"])
+            ->where('uuid', '[0-9a-fA-F\-]{36}');
+        $server->get('{uuid}', [$controllers["node"], "get"])
             ->where('uuid', '[0-9a-fA-F\-]{36}');
         $server->get('{uuid}/edges', [$controllers["node"], "getAllEdges"])
             ->where('uuid', '[0-9a-fA-F\-]{36}');
@@ -25,6 +29,12 @@ class Router
             ->where('uuid', '[0-9a-fA-F\-]{36}');
         $server->get('{uuid}/edges/out', [$controllers["node"], "getOutgoingEdges"])
             ->where('uuid', '[0-9a-fA-F\-]{36}');
+        $server->get('{uuid1}/edges/from/{uuid2}', [$controllers["node"], "getEdgesFrom"])
+            ->where('uuid1', '[0-9a-fA-F\-]{36}')
+            ->where('uuid2', '[0-9a-fA-F\-]{36}');
+        $server->get('{uuid1}/edges/to/{uuid2}', [$controllers["node"], "getEdgesTo"])
+            ->where('uuid1', '[0-9a-fA-F\-]{36}')
+            ->where('uuid2', '[0-9a-fA-F\-]{36}');
         $server->get('{uuid}/attributes', [$controllers["entity"], "getAttributes"])
             ->where('uuid', '[0-9a-fA-F\-]{36}');
         $server->get('{uuid}/attribute/{key}', [$controllers["entity"], "getAttribute"])

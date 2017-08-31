@@ -134,7 +134,7 @@ class NodeRoutesTest extends TestCase
     {
         list($tweet_id, $edge_id) = $ids;
 
-        $res = $this->get('/' . $edge_id, true);
+        $res = $this->get('/entity/' . $edge_id, true);
         $this->assertEquals(200, $res->getStatusCode());
 
         $body = json_decode($res->getBody(), true);
