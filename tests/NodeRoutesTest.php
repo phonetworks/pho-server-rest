@@ -15,7 +15,7 @@ class NodeRoutesTest extends TestCase
     public function testGetEdges()
     {
 
-        $res = $this->get('/' . $this->founder_id . '/edges', true);
+        $res = $this->get('/' . $this->founder_id . '/edges/all', true);
         $this->assertEquals(200, $res->getStatusCode());
 
         $body = json_decode($res->getBody(), true);
@@ -87,7 +87,7 @@ class NodeRoutesTest extends TestCase
         $keys = array_keys($body['to']);
         $tweet_id = array_pop($keys);
         $this->assertNotNull($tweet_id);
-        $edge_id = array_keys($body['to'][$tweet_id])[0];
+        $edge_id = array_column($body['to'][$tweet_id], "id")[0];
         $this->assertNotNull($edge_id);
         $return = [$tweet_id, $edge_id];
 
@@ -123,7 +123,7 @@ class NodeRoutesTest extends TestCase
         $keys       = array_keys($body['from']);
         $founder_id = array_pop($keys);
         $this->assertSame($founder_id, $this->founder_id);
-        $this->edge_id = array_keys($body['from'][$founder_id])[0];
+        $this->edge_id = array_column($body['from'][$founder_id], "id")[0];
         $this->assertSame($this->edge_id, $edge_id);
     }
 
@@ -134,7 +134,7 @@ class NodeRoutesTest extends TestCase
     {
         list($tweet_id, $edge_id) = $ids;
 
-        $res = $this->get('/entity/' . $edge_id, true);
+        $res = $this->get('/edge/' . $edge_id, true);
         $this->assertEquals(200, $res->getStatusCode());
 
         $body = json_decode($res->getBody(), true);

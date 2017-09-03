@@ -4,6 +4,7 @@ namespace Pho\Server\Rest\Controllers;
 
 use CapMousse\ReactRestify\Http\Request;
 use CapMousse\ReactRestify\Http\Response;
+use Pho\Lib\Graph\ID;
 
 class NodeController extends AbstractController 
 {
@@ -11,6 +12,11 @@ class NodeController extends AbstractController
 
     public function get(Request $request, Response $response, string $uuid)
     {
+        if((int) $uuid[0] > 5) {
+            $this->fail($response);
+            return;
+        }
+
         try {
             $res = $this->kernel->gs()->node($uuid);
         }
@@ -24,6 +30,7 @@ class NodeController extends AbstractController
         unset($node["edge_list"]);
         unset($node["notifications"]);
         unset($node["registered_edges"]);
+        $node["class"] = get_class($res);
         $response->writeJson($node)->end();
     }
 
@@ -39,8 +46,20 @@ class NodeController extends AbstractController
             }
             $this->cache[$uuid] = $res;
         }
-        if($type=="all")
-            $response->writeJson($this->cache[$uuid]->edges()->toArray())->end();
+        if($type=="all") {
+            $edges = $this->cache[$uuid]->edges()->toArray();
+            $return = array();
+            $return["from"] = $return["to"] = $return["in"] = $return["out"] = array();
+            $return["in"] = array_values($edges["in"]);
+            $return["out"] = array_values($edges["out"]);
+            foreach($edges["from"] as $id=>$from) {
+                $return["from"][$id] = array_values($from);
+            }
+            foreach($edges["to"] as $id=>$to) {
+                $return["to"][$id] = array_values($to);
+            }
+            $response->writeJson($return)->end();
+        }
         else
             $response->writeJson(
                 array_values(
@@ -61,12 +80,14 @@ class NodeController extends AbstractController
             }
             $this->cache[$uuid1] = $res;
         }
+
+        if(!in_array($type, ["from", "to"]))
+            $type = "from";
         
-        $response->writeJson(
-            array_values(
-                $this->cache[$uuid1]->edges()->$type($uuid2)->toArray()
-            )
-        )->end();
+        $edges = array_keys(
+            iterator_to_array($this->cache[$uuid1]->edges()->$type(ID::fromString($uuid2)))
+        );
+        $response->writeJson($edges)->end();
     }
 
     public function getAllEdges(Request $request, Response $response, string $uuid)
@@ -92,6 +113,67 @@ class NodeController extends AbstractController
     public function getEdgesTo(Request $request, Response $response, string $uuid1, string $uuid2)
     {
         $this->getDirectionalEdges("to", ...func_get_args());
+    }
+
+    public function getGetterEdges(Request $request, Response $response, string $uuid)
+    {
+        if(!isset($this->cache[$uuid])) {
+            try {
+                $res = $this->kernel->gs()->node($uuid);
+            }
+            catch(\Exception $e) {
+                $this->fail($response);
+                return;
+            }
+            $this->cache[$uuid] = $res;
+        }
+        $cargo = $this->cache[$uuid]->exportCargo();
+        $getters = array_merge(
+            $cargo["in"]->labels,
+            $cargo["out"]->labels
+        );
+        $getters = array_values(
+            array_unique(
+                array_diff($getters, 
+                    [ 
+                    // from pho-framework
+                    "readers", "subscribers", "reads", "subscriptions",
+                    "writes", "writers", "mentions", "mentioners"
+                    ]
+                )
+            )
+        );
+        $response->writeJson($getters)->end();
+    }
+
+    public function getSetterEdges(Request $request, Response $response, string $uuid)
+    {
+        if(!isset($this->cache[$uuid])) {
+            try {
+                $res = $this->kernel->gs()->node($uuid);
+            }
+            catch(\Exception $e) {
+                $this->fail($response);
+                return;
+            }
+            $this->cache[$uuid] = $res;
+        }
+        $cargo = $this->cache[$uuid]->exportCargo();
+        $setters = array_merge(
+            $cargo["out"]->setter_labels,
+            $cargo["out"]->formative_labels
+        );
+        $setters = array_values(
+            array_unique(
+                array_diff($setters, 
+                    [ 
+                    // from pho-framework
+                    "read", "subscribe", "write", "mention"
+                    ]
+                )
+            )
+        );
+        $response->writeJson($setters)->end();
     }
 
     public function getEdgesByClass(Request $request, Response $response, string $uuid, string $edge)

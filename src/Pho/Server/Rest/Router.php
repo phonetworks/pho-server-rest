@@ -15,32 +15,38 @@ class Router
 
     public static function initGet(Server $server, array $controllers): void
     {
-        $server->get('entity/{uuid}', [$controllers["entity"], "get"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
         $server->get('edge/{uuid}', [$controllers["edge"], "get"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}', [$controllers["node"], "get"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
+            /*
         $server->get('{uuid}/edges', [$controllers["node"], "getAllEdges"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');*/
+        $server->get('{uuid}/edges/getters', [$controllers["node"], "getGetterEdges"])
+            ->where('uuid', '[0-9a-fA-F]{32}');
+        $server->get('{uuid}/edges/setters', [$controllers["node"], "getSetterEdges"])
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}/edges/all', [$controllers["node"], "getAllEdges"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}/edges/in', [$controllers["node"], "getIncomingEdges"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}/edges/out', [$controllers["node"], "getOutgoingEdges"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
-        $server->get('{uuid1}/edges/from/{uuid2}', [$controllers["node"], "getEdgesFrom"])
-            ->where('uuid1', '[0-9a-fA-F\-]{36}')
-            ->where('uuid2', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
+        /*$server->get('{uuid1}/edges_from/{uuid2}', [$controllers["node"], "getEdgesFrom"])
+            ->where('uuid1', '[0-9a-fA-F]{32}')
+            ->where('uuid2', '[0-9a-fA-F]{32}');
         $server->get('{uuid1}/edges/to/{uuid2}', [$controllers["node"], "getEdgesTo"])
-            ->where('uuid1', '[0-9a-fA-F\-]{36}')
-            ->where('uuid2', '[0-9a-fA-F\-]{36}');
+            ->where('uuid1', '[0-9a-fA-F]{32}')
+            ->where('uuid2', '[0-9a-fA-F]{32}');
+            */
         $server->get('{uuid}/attributes', [$controllers["entity"], "getAttributes"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
+        $server->get('{uuid}/type', [$controllers["entity"], "getEntityType"])
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}/attribute/{key}', [$controllers["entity"], "getAttribute"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}/{edge}', [$controllers["node"], "getEdgesByClass"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}')
+            ->where('uuid', '[0-9a-fA-F]{32}')
             ->where('edge', '[a-z]+');
         $server->get('{method}', [$controllers["kernel"], "getStatic"])
             ->where('method', '[a-zA-Z]+');
@@ -49,24 +55,25 @@ class Router
     public static function initPut(Server $server, array $controllers): void
     {
         $server->put('{uuid}/attribute/{key}', [$controllers["entity"], "setAttribute"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
         
     }
 
     public static function initPost(Server $server, array $controllers): void
     {
+        $server->post('actor', [$controllers["kernel"], "createActor"]);
         $server->post('{uuid}/attribute/{key}', [$controllers["entity"], "setAttribute"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->post('{uuid}/{edge}', [$controllers["node"], "createEdge"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}')
+            ->where('uuid', '[0-9a-fA-F]{32}')
             ->where('edge', '[a-z]+');
     }
 
     public static function initDelete(Server $server, array $controllers): void
     {
         $server->delete('{uuid}', [$controllers["entity"], "delete"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
         $server->delete('{uuid}/attribute/{key}', [$controllers["entity"], "deleteAttribute"])
-            ->where('uuid', '[0-9a-fA-F\-]{36}');
+            ->where('uuid', '[0-9a-fA-F]{32}');
     }
 }

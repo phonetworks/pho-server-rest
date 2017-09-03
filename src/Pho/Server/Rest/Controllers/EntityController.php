@@ -8,18 +8,6 @@ use CapMousse\ReactRestify\Http\Response;
 class EntityController extends AbstractController 
 {
 
-    public function get(Request $request, Response $response, string $uuid)
-    {
-        try {
-            $res = $this->kernel->gs()->entity($uuid);
-        }
-        catch(\Exception $e) {
-            $this->fail($response);
-            return;
-        }
-        $response->writeJson($res->toArray())->end();
-    }
-
     public function delete(Request $request, Response $response, string $uuid)
     {
         try {
@@ -47,7 +35,7 @@ class EntityController extends AbstractController
         }
 
         $response->writeJson(
-            $this->cache[$uuid]->attributes()->toArray()
+            array_keys($this->cache[$uuid]->attributes()->toArray())
         )->end();
     }
 
@@ -64,9 +52,7 @@ class EntityController extends AbstractController
             $this->cache[$uuid] = $res;
         }
 
-        $response->writeJson([
-            $key => $this->cache[$uuid]->attributes()->$key
-        ])->end();
+        $response->writeJson($this->cache[$uuid]->attributes()->$key)->end();
     }
 
     public function setAttribute(Request $request, Response $response, string $uuid, string $key)
@@ -89,6 +75,38 @@ class EntityController extends AbstractController
 
         $this->cache[$uuid]->attributes()->$key = $request->value;
         $this->succeed($response);
+    }
+
+    public function getEntityType(Request $request, Response $response, string $uuid)
+    {
+        $type = "";
+        switch($uuid[0]) {
+            case 0:
+                $type = "Space"; break;
+            case 1:
+                $type = "Node"; break;
+            case 2:
+                $type = "Graph Node"; break;
+            case 3:
+                $type = "Graph"; break;
+            case 4:
+                $type = "Actor Node"; break;
+            case 5:
+                $type = "Object Node"; break;
+            case 6:
+                $type = "Edge"; break;
+            case 7:
+                $type = "Read Edge"; break;
+            case 8:
+                $type = "Write Edge"; break;
+            case 9:
+                $type = "Subscribe Edge"; break;
+            case "a":
+                $type = "Mention Edge"; break;
+            default:
+                $type = "Unidentified"; break;
+        }
+        $response->writeJson($type)->end();
     }
 
     public function deleteAttribute(Request $request, Response $response, string $uuid, string $key)

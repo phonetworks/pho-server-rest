@@ -17,16 +17,16 @@ class EntityRoutesTest extends TestCase
         $this->assertEquals(200, $res->getStatusCode());
 
         $body = json_decode($res->getBody(), true);
-        $this->assertArrayHasKey("Password", $body);
-        $this->assertArrayHasKey("JoinTime", $body);
-        $this->assertArrayHasKey("Birthday", $body);
-        $this->assertArrayHasKey("About", $body);
+        $this->assertContains("Password", $body);
+        $this->assertContains("JoinTime", $body);
+        $this->assertContains("Birthday", $body);
+        $this->assertContains("About", $body);
     }
 
-    public function testGetAttribute()
+    public function testEntityType()
     {
-        $body = $this->get('/' . $this->founder_id . '/attribute/About');
-        $this->assertArrayHasKey("About", $body);
+        $res = $this->get('/' . $this->founder_id . '/type');
+        $this->assertEquals("Actor Node", $res);
     }
 
     public function testGetUnexistingAttribute()
@@ -44,8 +44,9 @@ class EntityRoutesTest extends TestCase
         $this->post('/' . $this->founder_id . '/attribute/NewAttribute', ['value' => $text]);
 
         $body = $this->get('/' . $this->founder_id . '/attributes');
-        $this->assertArrayHasKey("NewAttribute", $body);
-        $this->assertSame($text, $body['NewAttribute']);
+        $this->assertContains("NewAttribute", $body);
+        $body = $this->get('/' . $this->founder_id . '/attribute/NewAttribute');
+        $this->assertSame($text, $body);
     }
 
     /**
@@ -66,8 +67,9 @@ class EntityRoutesTest extends TestCase
         $this->post('/' . $this->founder_id . '/attribute/NewAttribute', ['value' => $text]);
 
         $body = $this->get('/' . $this->founder_id . '/attributes');
-        $this->assertArrayHasKey("NewAttribute", $body);
-        $this->assertSame($text, $body['NewAttribute']);
+        $this->assertContains("NewAttribute", $body);
+        $body = $this->get('/' . $this->founder_id . '/attribute/NewAttribute');
+        $this->assertSame($text, $body);
     }
 
     /**
