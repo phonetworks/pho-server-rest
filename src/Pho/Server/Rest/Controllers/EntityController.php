@@ -122,6 +122,10 @@ class EntityController extends AbstractController
             $this->cache[$uuid] = $res;
         }
 
+        if(!isset($this->cache[$uuid]->attributes()->$key)) {
+            $this->fail($response);
+            return;
+        }
         unset($this->cache[$uuid]->attributes()->$key);
         $this->succeed($response);
     }

@@ -21,7 +21,7 @@ namespace Pho\Server\Rest;
  */
 class Server extends \CapMousse\ReactRestify\Server
 {
-    const VERSION = "0.1.0";
+    const VERSION = "1.1.0";
     const NAME = "PhoNetworks";
 
     public function __construct()

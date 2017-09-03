@@ -251,8 +251,8 @@ class NodeController extends AbstractController
                 }
                 $params[] = $request->$param;
             }
-            $this->cache[$uuid]->$edge(...$params);
-            $this->succeed($response);
+            $res = $this->cache[$uuid]->$edge(...$params);
+            $response->writeJson($res->id()->toString())->end();
             return;
         }
         
