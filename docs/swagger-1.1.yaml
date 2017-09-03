@@ -649,6 +649,6 @@ definitions:
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
-basePath: /phonetworks/server-rest/1.0.0
+basePath: /phonetworks/server-rest/1.1.0
 schemes:
  - https
