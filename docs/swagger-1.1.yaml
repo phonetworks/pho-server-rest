@@ -1,0 +1,615 @@
+swagger: '2.0'
+info:
+  description: Pho Networks REST API
+  version: "1.1"
+  title: Social Graph API
+  contact:
+    email: emre@phonetworks.org
+
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+
+paths:
+  /founder:
+    get:
+      operationId: getFounder
+      summary: retrieves the graph founder.
+      description: |
+        The founder must be a \Pho\Lib\Graph\Actor object. This method returns the object type as well as object uuid.
+      produces:
+      - application/json
+      responses:
+        200:
+          description: the founder class and id.
+          schema:
+              $ref: '#/definitions/IdWithClass'
+  /graph:
+    get:
+      operationId: getGraph
+      summary: retrieves the main graph.
+      description: |
+        The graph must be a \Pho\Lib\Graph\SubGraph object. This method returns the object type as well as object uuid.
+        The graph contains all nodes and edges in the system. Though it is contained by Space, its one and
+        only container.
+      produces:
+      - application/json
+      responses:
+        200:
+          description: the graph class and id.
+          schema:
+              $ref: '#/definitions/IdWithClass'
+              
+  /space:
+    get:
+      operationId: getSpace
+      summary: retrieves the space that the main graph belongs to.
+      description: |
+        The space must be a \Pho\Lib\Graph\Graph object. This method returns the object type as well as object uuid.
+      produces:
+      - application/json
+      responses:
+        200:
+          description: the space class and id (which is always ".")
+          schema:
+              $ref: '#/definitions/IdWithClass'
+
+  /actor:
+    post:
+      operationId: makeActor
+      summary: creates an Actor object.
+      description: |
+       Fetches whatever set as "default_object" "actor" while determining what Actor object to construct.
+       If it doesn't exist, uses "default_object" "founder" class. Otherwise fails.
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: param1
+        description: |
+          actor variable. more can be added
+          via param2, param3 ... param50.
+        required: false
+        schema:
+          type: string
+          example: "1234567"
+      responses:
+        200:
+          description: success
+        500:
+          description: failure
+
+  /edge/{uuid}:
+    get:
+      operationId: getEdge
+      summary: retrieves an edge
+      description: |
+        By passing in a UUID that exists in the database, you can search for
+        available edges in the system. 
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the entity uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+              $ref: '#/definitions/Edge'
+        400:
+          description: bad input parameter
+
+  /{uuid}:
+    get:
+      operationId: getNode
+      summary: retrieves a node
+      description: |
+        By passing in a UUID that exists in the database, you can search for
+        available nodes in the system. Please note, this function will not return
+        edges (with given UUID) even if they exist in the database. This method 
+        is  reserved for nodes only. That being said, other methods with {uuid} as 
+        a param may work with all entities, including edges. For more information
+        please refer to the documentation on these API calls.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the entity uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+              $ref: '#/definitions/Node'
+        400:
+          description: bad input parameter
+    delete:
+      operationId: delEntity
+      summary: deletes an entity
+      description: |
+        Works with all entities, including nodes and edges. 
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: item deleted
+        400:
+          description: invalid input, object invalid
+          
+  /{uuid}/type:
+    get:
+      operationId: getType
+      summary: fetches entity type
+      description: |
+        Possible values are; "Space", "Node", "Graph Node", "Graph", "Actor Node"
+        "Object Node", "Edge", "Read Edge", "Write Edge", "Subscribe Edge",
+        "Mention Edge", "Unidentified".
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: string
+            example: "Mention Edge"
+        400:
+          description: bad input parameter
+
+  /{uuid}/edges/all:
+    get:
+      operationId: getAllEdges
+      summary: retrieves the edges of a node
+      description: |
+        By passing in a node UUID that exists in the database, you can fetch 
+        the edges of the node in question.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+              type: object
+              required:
+              - from
+              - to
+              - in
+              - out
+              properties: 
+                from:
+                  type: array
+                  example: [ "d290f1ee-6c54-4b01-90e6-d701748f0851", "d290f1ee-6c54-4b01-90e6-d701748f085e"]
+                to:
+                  type: array
+                  example: [ "d290f1ee-6c54-4b01-90e6-d701748f0851", "d290f1ee-6c54-4b01-90e6-d701748f085e"]
+                in:
+                  type: array
+                  example: [ "d290f1ee-6c54-4b01-90e6-d701748f0851", "d290f1ee-6c54-4b01-90e6-d701748f085e"]
+                out:
+                  type: array
+                  example: [ "d290f1ee-6c54-4b01-90e6-d701748f0851", "d290f1ee-6c54-4b01-90e6-d701748f085e"]
+                  
+        400:
+          description: bad input parameter
+
+  /{uuid}/edges/in:
+    get:
+      operationId: getIncomingEdges
+      summary: retrieves the incoming edges of a node
+      description: |
+        By passing in a node UUID that exists in the database, you can fetch 
+        the incoming edges of the node in question.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+              $ref: '#/definitions/IdWithClasses'
+        400:
+          description: bad input parameter
+
+  /{uuid}/edges/out:
+    get:
+      operationId: getOutgoingEdges
+      summary: retrieves the outgoing edges of a node
+      description: |
+        By passing in a node UUID that exists in the database, you can fetch 
+        the outgoing edges of the node in question.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+              $ref: '#/definitions/IdWithClasses'
+        400:
+          description: bad input parameter
+
+  /{uuid}/edges/getters:
+    get:
+      operationId: getEdgeGetters
+      summary: retrieves the edge getter methods of a node
+      description: |
+        By passing in a node UUID that exists in the database, you can fetch 
+        the edge getter methods of the node in question.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["followers", "notifications", "follows", "likes", "posts"]
+        400:
+          description: bad input parameter
+
+  /{uuid}/edges/setters:
+    get:
+      operationId: getEdgeSetters
+      summary: retrieves the edge setter methods of a node
+      description: |
+        By passing in a node UUID that exists in the database, you can fetch 
+        the edge setter methods of the node in question. These setters may or 
+        may not be formative. If they are formative, a new node is created
+        in result.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["consume", "follow", "like", "post"]
+        400:
+          description: bad input parameter
+
+  /{uuid1}/edges/from/{uuid2}:
+    get:
+      operationId: getEdgesFrom
+      summary: retrieves the edges between two nodes
+      description: |
+        Lets you fetch the edges that originate from the node with the ID {uuid1}
+        (aka "the tail node"), and head to the node with the ID {uuid2} (aka "the
+        head node").
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid1
+        description: the tail node uuid
+        required: true
+        type: string
+      - in: path
+        name: uuid2
+        description: the head node uuid
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["consume", "follow", "like", "post"]
+        400:
+          description: bad input parameter
+
+  /{uuid}/attributes:
+    get:
+      operationId: getAttributes
+      summary: retrieves the existing attribute keys of an entity (edge or node)
+      description: |
+        Attribute keys are case-sensitive, and they will be listed
+        in an array.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: array
+            items:
+              type: string
+            example: ["Status", "CreateTime"]
+
+        400:
+          description: bad input parameter
+
+  /{uuid}/attribute/{key}:
+    get:
+      operationId: getAttribute
+      summary: retrieves the value of an entity attribute
+      description: |
+        Attribute key must be case-sensitive.
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node
+        required: true
+        type: string
+      - in: path
+        name: key
+        description: the attribute key
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: string
+            example: "This is new tweet"
+
+        400:
+          description: bad input parameter
+    post:
+      operationId: setAttribute
+      summary: updates (or creates) an attribute
+      description: |
+        Works with all entities, including nodes and edges. Given its key, updates an 
+        attribute value, or creates it, if it doesn't yet exist.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: value
+        description: The value to update the key with.
+        schema:
+          type: string
+          required: 
+            - value
+          properties:
+            value:
+              type: string
+              example: my second tweet
+      responses:
+        200:
+          description: item created
+        400:
+          description: invalid input, object invalid
+    put:
+      operationId: addAttribute
+      summary: updates (or creates) an attribute
+      description: |
+        Works with all entities, including nodes and edges. Given its key, updates an 
+        attribute value, or creates it, if it doesn't yet exist.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: value
+        description: The value to update the key with.
+        schema:
+          type: string
+          required: 
+            - value
+          properties:
+            value:
+              type: string
+              example: my second tweet
+      responses:
+        200:
+          description: item created
+        400:
+          description: invalid input, object invalid
+    delete:
+      operationId: delAttribute
+      summary: deletes an attribute
+      description: |
+        Works with all entities, including nodes and edges. Given its key, deletes an 
+        attribute.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: item deleted
+        400:
+          description: invalid input, object invalid
+
+  /{uuid}/{edge}:
+    get:
+      operationId: getNodeEdge
+      summary: edge getter
+      description: |
+        Fetches edge results, whether as edge IDs or node IDs, depending
+        on edge's characteristics. 
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: uuid
+        description: the node
+        required: true
+        type: string
+      - in: path
+        name: edge
+        description: the edge
+        required: true
+        type: string
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            type: string
+            example: "This is new tweet"
+
+        400:
+          description: bad input parameter
+    post:
+      operationId: makeEdge
+      summary: creates an edge 
+      description: |
+        If the edge is formative, then a node is also formed.
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: param1
+        description: |
+          The value to update the key with. There can be
+          50 of those. For example;  param1="value1",
+          param2 ="another value" depending on the edge's
+          default constructor variable count.
+        schema:
+          type: string
+          required: 
+            - param1
+          example: param1
+          properties:
+            param1:
+              type: string
+              example: my tweet
+      responses:
+        200:
+          description: entity created
+        400:
+          description: invalid input, object invalid
+
+
+definitions:
+  Node:
+    type: object
+    required:
+    - id
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      context:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      creator:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      class:
+        type: string
+        example: "PhoNetworksAutogenerated\\Status"
+
+  IdWithClass:
+    type: object
+    required:
+    - id
+    - class
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      class:
+        type: string
+        example: PhoNetworksAutogenerated\User
+
+  IdWithClasses:
+    type: object
+    required:
+    - id
+    - classes
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      classes:
+        type: array
+        items:
+          type: string
+          example: PhoNetworksAutogenerated\User
+
+  Empty:
+    type: object
+
+  Edge:
+    type: object
+    required:
+    - id
+    - head
+    - tail
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851     
+      head:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      tail:
+        type: string
+        format: uuid
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      class:
+        type: string
+        example: "PhoNetworksAutogenerated\\UserOut\\Post"
+
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /phonetworks/server-rest/1.0.0
+schemes:
+ - https
