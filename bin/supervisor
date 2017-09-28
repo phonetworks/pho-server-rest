@@ -1,0 +1,7 @@
+[program:pho]
+command=php /opt/pho-server-rest/run.php
+user=pho
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/pho/long.err.log
+stdout_logfile=/var/log/pho/long.out.log
