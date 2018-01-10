@@ -2,6 +2,8 @@
 
 An event-driven non-blocking REST API for the Pho Kernel.
 
+Pho-Server-Rest does not rely on a third party HTTP Server such as [NGINX](https://nginx.org/en/) or [Apache HTTPD](https://httpd.apache.org/). But it is recommended that you run it behind a proxy server for static assets and advanced HTTP techniques such as caching.
+
 ## Requirements
 
 * PHP 7.1+
@@ -28,6 +30,12 @@ git submodule update
 ```
 
 Alternatively you may create your own kernel with a [custom recipe](https://github.com/pho-recipes), and copy/paste it under the kernel directory. For instructions on how to create a custom kernel, check out the [README.md](https://github.com/phonetworks/pho-kernel/blob/master/README.md) file of [pho-kernel](https://github.com/phonetworks/pho-kernel/).
+
+## FAQ
+
+**How do I change the port?**
+
+By default, pho-server-rest is designed to serve through port 1337. You may change it from the file [run.php](https://github.com/phonetworks/pho-server-rest/blob/master/run.php) by changing the line that corresponds to ```$server->setPort(1337);```
 
 ## License
 
