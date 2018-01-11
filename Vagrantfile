@@ -4,7 +4,7 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "phonetworks/xenial-pho"
   config.vm.synced_folder "./", "/opt/pho-server-rest"
   config.vm.provision :shell, path: "bin/bootstrap.sh"
   ## in case of network connectivity issues
