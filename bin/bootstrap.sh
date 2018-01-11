@@ -3,3 +3,4 @@ sudo composer install
 sudo supervisorctl reload
 sudo supervisorctl update
 sudo systemctl enable supervisor
+sudo service supervisor start
