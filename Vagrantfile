@@ -15,6 +15,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
   end
-  config.vm.network "forwarded_port", guest: 1337, host: 80
-    auto_correct: true
+  config.vm.network "forwarded_port", guest: 1337, host: 80, auto_correct: true
 end
