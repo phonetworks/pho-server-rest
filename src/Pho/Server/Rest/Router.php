@@ -1,8 +1,24 @@
 <?php
 
+/*
+ * This file is part of the Pho package.
+ *
+ * (c) Emre Sokullu <emre@phonetworks.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Pho\Server\Rest;
 
-class Router
+/**
+ * Determines routes
+ * 
+ * Extends CypherRouter which includes Cypher related commands.
+ * 
+ * @author Emre Sokullu <emre@phonetworks.org>
+ */
+class Router extends CypherRouter
 {
     public static function init(Server $server, array $controllers): void
     {
