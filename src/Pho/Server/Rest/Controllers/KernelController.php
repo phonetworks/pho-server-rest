@@ -52,6 +52,10 @@ class KernelController extends AbstractController
             $this->fail($response);
             return;
         }
+        catch(\ArgumentCountError $e) {
+            $this->fail($response);
+            return;
+        }
 
         $response->writeJson(
             $actor->id()->toString()
