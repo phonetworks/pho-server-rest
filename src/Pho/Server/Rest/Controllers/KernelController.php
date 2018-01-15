@@ -46,7 +46,7 @@ class KernelController extends AbstractController
             return;
         }
             
-
+        $params = [];
         for($i=1;$i<50;$i++) {
             $param = sprintf("param%s", (string) $i);
             if(!$request->$param)
@@ -58,6 +58,10 @@ class KernelController extends AbstractController
             $actor = new $actor_class($this->kernel, $this->kernel->graph(), ...$params);
         }
         catch(\Exception $e) {
+            $this->fail($response);
+            return;
+        }
+        catch(\ArgumentCountError $e) {
             $this->fail($response);
             return;
         }
