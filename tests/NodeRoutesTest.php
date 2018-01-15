@@ -73,7 +73,9 @@ class NodeRoutesTest extends TestCase
     public function testCreateEdge()
     {
         $post_res = $this->post('/' . $this->founder_id . '/post', ['param1' => 'This is new tweet']);
-        $this->assertSame($post_res['success'], true);
+        //eval(\Psy\sh());
+        $this->assertTrue((bool)preg_match('/^[0-9a-fA-F]{32}$/', $post_res));
+        //$this->assertSame($post_res['success'], true);
     }
 
     public function testCreatedEdgeInOut()

@@ -15,11 +15,14 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected $pipes = [];
     protected $client;
     protected $founder_id = '';
+    protected $faker;
 
     const HOST = "http://localhost:1337";
 
     public function setUp()
     {
+        $this->faker = Faker\Factory::create();
+
         if (!file_exists('tests/logs')) {
             mkdir('tests/logs');
         }

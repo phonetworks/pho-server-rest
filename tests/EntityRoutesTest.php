@@ -80,14 +80,7 @@ class EntityRoutesTest extends TestCase
         $this->delete('/' . $this->founder_id . '/attribute/NewAttribute');
 
         $body = $this->get('/' . $this->founder_id . '/attributes');
-        $this->assertSame(false, array_key_exists('NewAttribute', $body));
+        $this->assertFalse(array_key_exists('NewAttribute', $body));
     }
 
-    public function testDeleteEntity()
-    {
-        $this->delete('/' . $this->founder_id . '/attribute/NewAttribute');
-
-        $body = $this->get('/' . $this->founder_id . '/attributes');
-        $this->assertSame(false, array_key_exists('NewAttribute', $body));
-    }
 }

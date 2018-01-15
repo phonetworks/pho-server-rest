@@ -14,11 +14,9 @@ namespace Pho\Server\Rest;
 /**
  * Determines routes
  * 
- * Extends CypherRouter which includes Cypher related commands.
- * 
  * @author Emre Sokullu <emre@phonetworks.org>
  */
-class Router extends CypherRouter
+class Router
 {
     public static function init(Server $server, array $controllers): void
     {
@@ -31,6 +29,9 @@ class Router extends CypherRouter
 
     public static function initGet(Server $server, array $controllers): void
     {
+        $server->get('edges', [$controllers["cypher"], "matchEdges"]);
+        $server->get('nodes', [$controllers["cypher"], "matchNodes"]);
+        
         $server->get('edge/{uuid}', [$controllers["edge"], "get"])
             ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}', [$controllers["node"], "get"])
@@ -66,6 +67,8 @@ class Router extends CypherRouter
             ->where('edge', '[a-z]+');
         $server->get('{method}', [$controllers["kernel"], "getStatic"])
             ->where('method', '[a-zA-Z]+');
+
+        
     }
 
     public static function initPut(Server $server, array $controllers): void
