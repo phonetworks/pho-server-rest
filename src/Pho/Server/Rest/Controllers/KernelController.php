@@ -37,7 +37,7 @@ class KernelController extends AbstractController
             return;
         }
             
-
+        $params = [];
         for($i=1;$i<50;$i++) {
             $param = sprintf("param%s", (string) $i);
             if(!$request->$param)
