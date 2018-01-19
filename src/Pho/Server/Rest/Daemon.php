@@ -50,7 +50,7 @@ class Daemon
         }
     }
 
-    protected function initControllers(): void
+    protected function initControllers(string $base = __DIR__): void
     {
         $build = function(array $classes): void
         {
@@ -62,7 +62,7 @@ class Daemon
                 $this->controllers[$controller_key] = new $class($this->kernel);
             }
         };
-        $controller_dir = __DIR__ . DIRECTORY_SEPARATOR . "Controllers";
+        $controller_dir = $base . DIRECTORY_SEPARATOR . "Controllers";
         $locator = new \Zend\File\ClassFileLocator($controller_dir);
         foreach ($locator as $file) {
             $filename = str_replace($controller_dir . DIRECTORY_SEPARATOR, '', $file->getRealPath());
