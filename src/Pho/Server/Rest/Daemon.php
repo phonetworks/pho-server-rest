@@ -26,12 +26,19 @@ class Daemon
     protected $port = 80;
     protected $formable_nodes = [];
 
-    public function __construct(Kernel $kernel)
+    public function __construct(Kernel $kernel, string $server_class = "Server", string $router_class = "Router")
     {
-        $this->server = new Server();
+        $this->server = new $server_class();
+        if(!$this->server instanceof Server) 
+        {
+            throw new \InvalidArgumentException("Server Class not set properly);   
+        }
         $this->kernel = $kernel;
         $this->initControllers();
-        Router::init($this->server, $this->controllers);
+        $router_class::init(
+            $this->server, 
+            $this->controllers
+        );
     }
 
     public function setPort(int $port): void
