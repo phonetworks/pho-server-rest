@@ -40,7 +40,7 @@ abstract class AbstractController
             $response
                     ->setStatus(400)
                     ->writeJson([
-                        "success" => false
+                        "success" => false,
                         "reason   => $message
                     ])
                     ->end();
