@@ -30,10 +30,19 @@ abstract class AbstractController
             ->end();
     }
 
-    protected function fail(Response $response): void
+    protected function fail(Response $response, string $message = ""): void
     {
-        $response
-                ->setStatus(500)
-                ->end();
+        if(empty($message))
+            $response
+                    ->setStatus(500)
+                    ->end();
+        else 
+            $response
+                    ->setStatus(400)
+                    ->writeJson([
+                        "success" => false
+                        "reason   => $message
+                    ])
+                    ->end();
     }
 }
