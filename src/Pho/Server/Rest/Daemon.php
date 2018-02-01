@@ -56,7 +56,7 @@ class Daemon
         {
             foreach($classes as $class) {
                 $ref = new \ReflectionClass($class);
-                if(!$ref->isSubclassOf(Controllers\AbstractController::class) || $class == Controllers\AbstractController::class)
+                if(!$ref->isSubclassOf(Controllers\AbstractController::class) || $ref->isAbstract() /*$class == Controllers\AbstractController::class */)
                     continue;
                 $controller_key = strtolower(str_replace("Controller", "", $ref->getShortName()));
                 $this->controllers[$controller_key] = new $class($this->kernel);
