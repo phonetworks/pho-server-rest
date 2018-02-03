@@ -201,15 +201,17 @@ class NodeController extends AbstractController
         }
 
         $cargo = $this->cache[$uuid]->exportCargo();
-
-        $checkEdgeName = function(array $haystack) use (/*string*/ $edge): bool
+        $edge_camelized = StaticStringy::camelize($edge);
+        $checkEdgeName = function(array $haystack) use (/*string*/ $edge_camelized): bool
         {
-            return \in_array($edge, $haystack);
+            error_log("checking {$edge_camelized} in ".print_r($haystack, true));
+            return \in_array($edge_camelized, $haystack);
         };
 
         $handlePlural = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): void
         {
             $method = "get" . StaticStringy::upperCamelize($edge);
+            error_log("method would be: ".$method);
             $res = $this->cache[$uuid]->$method();
             $return = [];
             foreach($res as $entity) {
@@ -221,10 +223,11 @@ class NodeController extends AbstractController
         $handleSingular = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): bool
         {
             $method = "get" . StaticStringy::upperCamelize($edge);
+            error_log("singular method would be: ".$method);
             $res = $this->cache[$uuid]->$method();
             if($res instanceof EntityInterface)
             {
-                $response->writeJson((string) $res->id())->end();
+                $response->writeJson([(string) $res->id()])->end();
                 return true;
             }
             return false;
@@ -249,7 +252,7 @@ class NodeController extends AbstractController
         {
                 return;
         }
-
+        //error_log("nothing found for {$edge} while \$cargo is: ".print_r($cargo, true));
         $this->fail($response);
     }
 
