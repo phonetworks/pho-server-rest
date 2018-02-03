@@ -64,7 +64,7 @@ class Router
             ->where('uuid', '[0-9a-fA-F]{32}');
         $server->get('{uuid}/{edge}', [$controllers["node"], "getEdgesByClass"])
             ->where('uuid', '[0-9a-fA-F]{32}')
-            ->where('edge', '[a-z]+');
+            ->where('edge', '[a-zA-Z_]+');
         $server->get('{method}', [$controllers["kernel"], "getStatic"])
             ->where('method', '[a-zA-Z]+');
 

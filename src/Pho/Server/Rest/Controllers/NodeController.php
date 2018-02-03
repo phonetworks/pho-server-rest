@@ -14,6 +14,8 @@ namespace Pho\Server\Rest\Controllers;
 use CapMousse\ReactRestify\Http\Request;
 use CapMousse\ReactRestify\Http\Response;
 use Pho\Lib\Graph\ID;
+use Stringy\StaticStringy;
+use Pho\Lib\Graph\EntityInterface;
 
 class NodeController extends AbstractController 
 {
@@ -199,29 +201,58 @@ class NodeController extends AbstractController
         }
 
         $cargo = $this->cache[$uuid]->exportCargo();
-        
-        if(in_array($edge, $cargo["in"]->labels)) {
-            $method = "get".ucfirst($edge);
-            $res = $this->cache[$uuid]->$method();
-            $return = [];
-            foreach($res as $entity) {
-                $return[] = (string) $entity->id();
-            }
-            $response->writeJson($return)->end();
-            return;
-        }
-        elseif(in_array($edge, $cargo["out"]->labels)) {
-            // reads
-            $method = "get".ucfirst($edge);
-            $res = $this->cache[$uuid]->$method();
-            $return = [];
-            foreach($res as $entity) {
-                $return[] = (string) $entity->id();
-            }
-            $response->writeJson($return)->end();
-            return;
-        }
+        $edge_camelized = StaticStringy::camelize($edge);
+        $checkEdgeName = function(array $haystack) use (/*string*/ $edge_camelized): bool
+        {
+            error_log("checking {$edge_camelized} in ".print_r($haystack, true));
+            return \in_array($edge_camelized, $haystack);
+        };
 
+        $handlePlural = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): void
+        {
+            $method = "get" . StaticStringy::upperCamelize($edge);
+            error_log("method would be: ".$method);
+            $res = $this->cache[$uuid]->$method();
+            $return = [];
+            foreach($res as $entity) {
+                $return[] = (string) $entity->id();
+            }
+            $response->writeJson($return)->end();
+        };
+
+        $handleSingular = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): bool
+        {
+            $method = "get" . StaticStringy::upperCamelize($edge);
+            error_log("singular method would be: ".$method);
+            $res = $this->cache[$uuid]->$method();
+            if($res instanceof EntityInterface)
+            {
+                $response->writeJson([(string) $res->id()])->end();
+                return true;
+            }
+            return false;
+        };
+        
+        if(
+            $checkEdgeName($cargo["in"]->labels) ||
+            $checkEdgeName($cargo["out"]->labels) ||
+            $checkEdgeName($cargo["in"]->callable_edge_labels) ||
+            $checkEdgeName($cargo["out"]->callable_edge_labels)
+        ) {
+            $handlePlural();
+            return;
+        }
+        
+        if(
+            ($checkEdgeName($cargo["in"]->singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($cargo["out"]->singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($cargo["in"]->callable_edge_singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($cargo["out"]->callable_edge_singularLabels) && $handleSingular())
+        )
+        {
+                return;
+        }
+        //error_log("nothing found for {$edge} while \$cargo is: ".print_r($cargo, true));
         $this->fail($response);
     }
 
