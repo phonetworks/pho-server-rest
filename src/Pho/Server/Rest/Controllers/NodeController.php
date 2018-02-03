@@ -201,46 +201,53 @@ class NodeController extends AbstractController
         }
 
         $cargo = $this->cache[$uuid]->exportCargo();
+
+        $checkEdgeName = function(array $haystack) use (/*string*/ $edge): bool
+        {
+            return \in_array($edge, $haystack);
+        };
+
+        $handlePlural = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): void
+        {
+            $method = "get" . StaticStringy::upperCamelize($edge);
+            $res = $this->cache[$uuid]->$method();
+            $return = [];
+            foreach($res as $entity) {
+                $return[] = (string) $entity->id();
+            }
+            $response->writeJson($return)->end();
+        };
+
+        $handleSingular = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): bool
+        {
+            $method = "get" . StaticStringy::upperCamelize($edge);
+            $res = $this->cache[$uuid]->$method();
+            if($res instanceof EntityInterface)
+            {
+                $response->writeJson((string) $res->id())->end();
+                return true;
+            }
+            return false;
+        };
         
-        if(in_array($edge, $cargo["in"]->labels)) {
-            $method = "get" . StaticStringy::upperCamelize($edge);
-            $res = $this->cache[$uuid]->$method();
-            $return = [];
-            foreach($res as $entity) {
-                $return[] = (string) $entity->id();
-            }
-            $response->writeJson($return)->end();
+        if(
+            $checkEdgeName($cargo["in"]->labels) ||
+            $checkEdgeName($cargo["out"]->labels) ||
+            $checkEdgeName($edge, $cargo["in"]->callable_edge_labels) ||
+            $checkEdgeName($edge, $cargo["out"]->callable_edge_labels)
+        ) {
+            $handlePlural();
             return;
         }
-        elseif(in_array($edge, $cargo["in"]->singularLabels)) {
-            $method = "get" . StaticStringy::upperCamelize($edge);
-            $res = $this->cache[$uuid]->$method();
-            if($res instanceof EntityInterface)
-            {
-                $response->writeJson((string) $res->id())->end();
+        
+        if(
+            ($checkEdgeName($cargo["in"]->singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($edge, $cargo["out"]->singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($edge, $cargo["in"]->callable_edge_singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($edge, $cargo["out"]->callable_edge_singularLabels) && $handleSingular())
+        )
+        {
                 return;
-            }
-        }
-        elseif(in_array($edge, $cargo["out"]->labels)) {
-            // reads
-            $method = "get" . StaticStringy::upperCamelize($edge);
-            $res = $this->cache[$uuid]->$method();
-            $return = [];
-            foreach($res as $entity) {
-                $return[] = (string) $entity->id();
-            }
-            $response->writeJson($return)->end();
-            return;
-        }
-        elseif(in_array($edge, $cargo["out"]->singularLabels)) {
-            // reads
-            $method = "get" . StaticStringy::upperCamelize($edge);
-            $res = $this->cache[$uuid]->$method();
-            if($res instanceof EntityInterface)
-            {
-                $response->writeJson((string) $res->id())->end();
-                return;
-            }
         }
 
         $this->fail($response);
