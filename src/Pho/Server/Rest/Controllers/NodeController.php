@@ -14,6 +14,8 @@ namespace Pho\Server\Rest\Controllers;
 use CapMousse\ReactRestify\Http\Request;
 use CapMousse\ReactRestify\Http\Response;
 use Pho\Lib\Graph\ID;
+use Stringy\StaticStringy;
+use Pho\Lib\Graph\EntityInterface;
 
 class NodeController extends AbstractController 
 {
@@ -201,7 +203,7 @@ class NodeController extends AbstractController
         $cargo = $this->cache[$uuid]->exportCargo();
         
         if(in_array($edge, $cargo["in"]->labels)) {
-            $method = "get".ucfirst($edge);
+            $method = "get" . StaticStringy::upperCamelize($edge);
             $res = $this->cache[$uuid]->$method();
             $return = [];
             foreach($res as $entity) {
@@ -210,9 +212,18 @@ class NodeController extends AbstractController
             $response->writeJson($return)->end();
             return;
         }
+        elseif(in_array($edge, $cargo["in"]->singularLabels)) {
+            $method = "get" . StaticStringy::upperCamelize($edge);
+            $res = $this->cache[$uuid]->$method();
+            if($res instanceof EntityInterface)
+            {
+                $response->writeJson((string) $res->id())->end();
+                return;
+            }
+        }
         elseif(in_array($edge, $cargo["out"]->labels)) {
             // reads
-            $method = "get".ucfirst($edge);
+            $method = "get" . StaticStringy::upperCamelize($edge);
             $res = $this->cache[$uuid]->$method();
             $return = [];
             foreach($res as $entity) {
@@ -220,6 +231,16 @@ class NodeController extends AbstractController
             }
             $response->writeJson($return)->end();
             return;
+        }
+        elseif(in_array($edge, $cargo["out"]->singularLabels)) {
+            // reads
+            $method = "get" . StaticStringy::upperCamelize($edge);
+            $res = $this->cache[$uuid]->$method();
+            if($res instanceof EntityInterface)
+            {
+                $response->writeJson((string) $res->id())->end();
+                return;
+            }
         }
 
         $this->fail($response);
