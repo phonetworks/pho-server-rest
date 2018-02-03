@@ -233,8 +233,8 @@ class NodeController extends AbstractController
         if(
             $checkEdgeName($cargo["in"]->labels) ||
             $checkEdgeName($cargo["out"]->labels) ||
-            $checkEdgeName($edge, $cargo["in"]->callable_edge_labels) ||
-            $checkEdgeName($edge, $cargo["out"]->callable_edge_labels)
+            $checkEdgeName($cargo["in"]->callable_edge_labels) ||
+            $checkEdgeName($cargo["out"]->callable_edge_labels)
         ) {
             $handlePlural();
             return;
@@ -242,9 +242,9 @@ class NodeController extends AbstractController
         
         if(
             ($checkEdgeName($cargo["in"]->singularLabels) && $handleSingular()) ||
-            ($checkEdgeName($edge, $cargo["out"]->singularLabels) && $handleSingular()) ||
-            ($checkEdgeName($edge, $cargo["in"]->callable_edge_singularLabels) && $handleSingular()) ||
-            ($checkEdgeName($edge, $cargo["out"]->callable_edge_singularLabels) && $handleSingular())
+            ($checkEdgeName($cargo["out"]->singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($cargo["in"]->callable_edge_singularLabels) && $handleSingular()) ||
+            ($checkEdgeName($cargo["out"]->callable_edge_singularLabels) && $handleSingular())
         )
         {
                 return;
