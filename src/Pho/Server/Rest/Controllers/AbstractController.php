@@ -23,7 +23,7 @@ abstract class AbstractController
         $this->jsonp = $jsonp;
     } 
     
-    private function getWriteMethod(): string
+    protected function getWriteMethod(): string
     {
         return $this->jsonp ? "writeJsonP" : "writeJson";
     }
