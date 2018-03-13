@@ -50,7 +50,7 @@ class Daemon
         }
     }
 
-    protected function initControllers(string $base = __DIR__): void
+    protected function initControllers(string $base = __DIR__,  bool $jsonp = false): void
     {
         $build = function(array $classes): void
         {
@@ -59,7 +59,7 @@ class Daemon
                 if(!$ref->isSubclassOf(Controllers\AbstractController::class) || $ref->isAbstract() /*$class == Controllers\AbstractController::class */)
                     continue;
                 $controller_key = strtolower(str_replace("Controller", "", $ref->getShortName()));
-                $this->controllers[$controller_key] = new $class($this->kernel, true);
+                $this->controllers[$controller_key] = new $class($this->kernel, $jsonp);
             }
         };
         $controller_dir = $base . DIRECTORY_SEPARATOR . "Controllers";
