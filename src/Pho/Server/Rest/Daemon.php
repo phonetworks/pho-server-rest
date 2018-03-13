@@ -52,7 +52,7 @@ class Daemon
 
     protected function initControllers(string $base = __DIR__,  bool $jsonp = false): void
     {
-        $build = function(array $classes): void
+        $build = function(array $classes) use ($jsonp): void
         {
             foreach($classes as $class) {
                 $ref = new \ReflectionClass($class);
