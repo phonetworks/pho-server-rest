@@ -59,7 +59,7 @@ class Daemon
                 if(!$ref->isSubclassOf(Controllers\AbstractController::class) || $ref->isAbstract() /*$class == Controllers\AbstractController::class */)
                     continue;
                 $controller_key = strtolower(str_replace("Controller", "", $ref->getShortName()));
-                $this->controllers[$controller_key] = new $class($this->kernel);
+                $this->controllers[$controller_key] = new $class($this->kernel, true);
             }
         };
         $controller_dir = $base . DIRECTORY_SEPARATOR . "Controllers";
