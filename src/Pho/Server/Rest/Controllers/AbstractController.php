@@ -16,15 +16,23 @@ use CapMousse\ReactRestify\Http\Response;
 abstract class AbstractController
 {
     protected $kernel;
+    protected $jsonp = false;
 
-    public function __construct(\Pho\Kernel\Kernel $kernel) {
+    public function __construct(\Pho\Kernel\Kernel $kernel, bool $jsonp = false) {
         $this->kernel = $kernel;
+        $this->jsonp = $jsonp;
     } 
+    
+    private function getWriteMethod(): string
+    {
+        return $this->jsonp ? "writeJsonP" : "writeJson";
+    }
 
     protected function succeed(Response $response): void
     {
+        $method = $this->getWriteMethod();
         $response
-            ->writeJson([
+            ->$method([
                 "success"=>true
             ])
             ->end();
@@ -36,13 +44,15 @@ abstract class AbstractController
             $response
                     ->setStatus(500)
                     ->end();
-        else 
+        else {
+            $method = $this->getWriteMethod();
             $response
                     ->setStatus(400)
-                    ->writeJson([
+                    ->$method([
                         "success" => false,
                         "reason"   => $message
                     ])
                     ->end();
+        }
     }
 }
