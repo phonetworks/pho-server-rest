@@ -18,8 +18,8 @@ use Pho\Lib\Graph\ID;
 class CypherController extends AbstractController 
 {
 
-    private const Q_NODES = "MATCH (n%s %s) RETURN n";
-    private const Q_EDGES = "MATCH (%s)-[r%s %s]-(%s) RETURN r";
+    private const Q_NODES = "MATCH (n%s {%s}) RETURN n";
+    private const Q_EDGES = "MATCH (%s)-[r%s {%s}]-(%s) RETURN r";
 
     public function matchNodes(Request $request, Response $response) 
     {
@@ -43,13 +43,11 @@ class CypherController extends AbstractController
 
         foreach($data as $key=>$val)
         {
-            $q .= sprintf("%s: {%s}, ", $key, $key);
+            $q .= sprintf("%s: '%s', ", $key, addslashes($val));
         }
 
         if(count($data)>0) {
-            $q = sprintf("{%s}",
-                 substr($q, 0, -2) // rtrim ", "
-            ); 
+            $q = substr($q, 0, -2);
         }
 
         $cypher = sprintf(self::Q_NODES, $label, $q);
@@ -97,13 +95,11 @@ class CypherController extends AbstractController
 
         foreach($data as $key=>$val)
         {
-            $q .= sprintf("%s: {%s}, ", $key, $key);
+            $q .= sprintf("%s: '%s', ", $key, addslashes($val));
         }
 
         if(count($data)>0) {
-            $q = sprintf("{%s}",
-                 substr($q, 0, -2) // rtrim ", "
-            ); 
+            $q = substr($q, 0, -2);
         }
 
         
