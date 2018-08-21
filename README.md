@@ -20,8 +20,6 @@ The recommended way to install pho-server-rest is through git. MacOS and most UN
 > or just download the pho-server-rest zip tarball from https://github.com/phonetworks/pho-server-rest/archive/master.zip 
 > and extract.
 
-## Kernel
-
 Once the REST Server is installed, you need a Pho Kernel to run it. You can install the standard Pho Kernel simply by typing:
 
 ```
@@ -30,6 +28,10 @@ git submodule update
 ```
 
 Alternatively you may create your own kernel with a [custom recipe](https://github.com/pho-recipes), and copy/paste it under the kernel directory. For instructions on how to create a custom kernel, check out the [README.md](https://github.com/phonetworks/pho-kernel/blob/master/README.md) file of [pho-kernel](https://github.com/phonetworks/pho-kernel/).
+
+Once the kernel is set up, you should install the dependencies using Composer as follows:
+
+```composer install```
 
 ## FAQ
 
