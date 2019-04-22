@@ -2,7 +2,7 @@
   <img width="375" height="150" src="https://github.com/phonetworks/commons-php/raw/master/.github/cover-smaller.png">
 </p>
 
-# Pho-Server-REST
+# pho-server-rest
 
 An event-driven non-blocking REST API for the Phở Kernel.
 
