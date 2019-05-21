@@ -9,4 +9,6 @@
 return array(
     "get" => ['GET', '/{uuid}'],
     "getGetterEdges" => ['GET', '/{uuid}/edges/getters'],
+    "getSetterEdges" => ['GET', '/{uuid}/edges/setters'],
+    "getAllEdges" => ['GET', '/{uuid}/edges/all'],
 );
