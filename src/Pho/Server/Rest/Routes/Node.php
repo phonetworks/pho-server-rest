@@ -7,5 +7,6 @@
  * 
  */
 return array(
-    '{uuid}' => 'entity@get',
+    "get" => ['GET', '/{uuid}'],
+    "getGetterEdges" => ['GET', '/{uuid}/edges/getters'],
 );

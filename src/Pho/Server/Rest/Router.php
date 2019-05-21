@@ -13,6 +13,7 @@ namespace Pho\Server\Rest;
 
 use FastRoute\simpleDispatcher;
 use Psr\Http\Message\ServerRequestInterface;
+use Pho\Kernel\Kernel;
 
 /**
  * Determines routes
@@ -22,17 +23,51 @@ use Psr\Http\Message\ServerRequestInterface;
 class Router
 {
 
+    protected $kernel;
     protected $dispatcher; 
+    protected $routes = [];
 
-    public function __construct()
+    public function __construct(Kernel $kernel)
     {
-        $this->dispatcher = \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) {
-            $r->addRoute('GET', '/edges', "Cypher::matchEdges");
-            // {id} must be a number (\d+)
-            $r->addRoute('POST', '/nodes', "Cypher::matchNodes");
-            // The /{title} suffix is optional
-            // $r->addRoute('GET', '/articles/{id:\d+}[/{title}]', 'get_article_handler');
+        $this->kernel = $kernel;
+        $routes_dir = __DIR__ . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR;
+        $this->initRoutes($routes_dir);
+    }
+
+    private function initRoutes(string $routes_dir): void
+    {
+        $reformat = function(string $file): string 
+        {
+            return str_replace(".php", "", lcfirst($file));
+        };
+        $route_files = scandir($routes_dir);
+        foreach ($route_files as $file) {
+            if(!in_array($file, [".", ".."])) {
+                $this->routes[$reformat($file)] = include($routes_dir.$file);
+            }
+        }
+    }
+
+    public function compile(): self
+    {
+        $routes = $this->routes;
+        $resolvePath = function(string $path): string
+        {
+            // this lambda converts some common usages such as uuid
+            // for unique cases, regex must be kept at the 
+            // route level.
+            return str_replace("{uuid}", "{uuid:[0-9a-fA-F]{32}}");
+        };
+        $this->dispatcher = \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) use ($routes) {
+            foreach($routes as $controller => $handlers) {
+                foreach($handlers as $handler => $route) {
+                    $method = $route[0];
+                    $path = $resolvePath($route[1]);
+                    $r->addRoute($method, $path, "{$controller}::{$handler}");
+                }
+            }
         });
+        return $this;
     }
 
     public function __invoke(ServerRequestInterface $request)
@@ -58,6 +93,11 @@ class Router
                 break;         
         }
     }
+
+
+    ///// ANYTHING BELOW THIS BELONGS TO PHO-SERVER-REST 1.0.0
+    ///// ONCE THE ROUTES ARE COPIED
+    ///// ALL BELOW SHOULD BE REMOVED
 
     public static function init(Server $server, array $controllers): void
     {
