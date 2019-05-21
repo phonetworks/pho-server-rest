@@ -31,6 +31,7 @@ class Server
     protected $controllers=[];
     protected $port = 80;
     protected $formable_nodes = [];
+    protected $jsonp = false;
 
     public function __construct(Kernel $kernel, LoopInterface $loop = null)
     {
@@ -40,7 +41,8 @@ class Server
             $loop = \React\EventLoop\Factory::create();    
         }
         $this->loop = $loop;
-        $this->initControllers();
+        $controller_dir = __DIR__ . DIRECTORY_SEPARATOR . "Controllers";
+        $this->addControllers($controller_dir);
     }
 
     public function setPort(int $port): void
@@ -73,14 +75,14 @@ class Server
     }
 
     /**
-     * @todo this is very dirty. routes and controllers must work in sync.
      *
-     * @param string $base
-     * @param boolean $jsonp
-     * @return void
+     *
+     * @param string $controller_dir
+     * @return self
      */
-    protected function initControllers(string $base = __DIR__,  bool $jsonp = false): void
+    public function addControllers(string $controller_dir): self
     {
+        $jsonp = $this->jsonp;
         $build = function(array $classes) use ($jsonp): void
         {
             foreach($classes as $class) {
@@ -91,12 +93,29 @@ class Server
                 $this->controllers[$controller_key] = new $class($this->kernel, $jsonp);
             }
         };
-        $controller_dir = $base . DIRECTORY_SEPARATOR . "Controllers";
+        
         $locator = new \Zend\File\ClassFileLocator($controller_dir);
         foreach ($locator as $file) {
             $filename = str_replace($controller_dir . DIRECTORY_SEPARATOR, '', $file->getRealPath());
             $build($file->getClasses());
         }
+        return $this;
+    }
+
+    public function respondInJsonp(): self
+    {
+        foreach($this->controllers as $key=>$class) {
+            $this->controllers[$key]->respondInJsonp();
+        }
+        $this->jsonp = true;
+    }
+
+    public function respondInJson(): self
+    {
+        foreach($this->controllers as $key=>$class) {
+            $this->controllers[$key]->respondInJson();
+        }
+        $this->jsonp = false;
     }
 
     public function withAdditionalRoutes(string $directory): self

@@ -22,6 +22,16 @@ abstract class AbstractController
         $this->kernel = $kernel;
         $this->jsonp = $jsonp;
     } 
+
+    public function respondInJsonp()
+    {
+        $this->jsonp = true;
+    }
+
+    public function respondInJson()
+    {
+        $this->jsonp = false;
+    }
     
     protected function getWriteMethod(): string
     {
