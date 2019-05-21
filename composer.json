@@ -24,8 +24,9 @@
     "prefer-stable": true,
     "require": {
         "php":">=7.1.0",
-        "esokullu/react-restify": "dev-master",
-        "danielstjules/stringy": "^3.0"
+        "react/http": "^0.8.4",
+        "danielstjules/stringy": "^3.0",
+        "nikic/fast-route": "^1.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",

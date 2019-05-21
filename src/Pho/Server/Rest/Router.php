@@ -11,6 +11,9 @@
 
 namespace Pho\Server\Rest;
 
+use FastRoute\simpleDispatcher;
+use Psr\Http\Message\ServerRequestInterface;
+
 /**
  * Determines routes
  * 
@@ -18,6 +21,44 @@ namespace Pho\Server\Rest;
  */
 class Router
 {
+
+    protected $dispatcher; 
+
+    public function __construct()
+    {
+        $this->dispatcher = \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) {
+            $r->addRoute('GET', '/edges', "Cypher::matchEdges");
+            // {id} must be a number (\d+)
+            $r->addRoute('POST', '/nodes', "Cypher::matchNodes");
+            // The /{title} suffix is optional
+            // $r->addRoute('GET', '/articles/{id:\d+}[/{title}]', 'get_article_handler');
+        });
+    }
+
+    public function __invoke(ServerRequestInterface $request)
+    {
+        $method = $request->getMethod(); // GET or POST
+        $path = $request->getUri()->getPath(); // the path
+        $routeInfo = $this->dipatcher->dispatch($method, $path);   
+        switch ($routeInfo[0]) {
+            /*
+            case FastRoute\Dispatcher::NOT_FOUND:
+                // ... 404 Not Found
+                break;
+            case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+                $allowedMethods = $routeInfo[1];
+                // ... 405 Method Not Allowed
+                break;
+                */
+            case FastRoute\Dispatcher::FOUND:
+                $handler = $routeInfo[1];
+                $vars = $routeInfo[2];
+                $this->logger->info("Found: ".$handler . " --- ". print_r($vars, true));
+                // ... call $handler with $vars
+                break;         
+        }
+    }
+
     public static function init(Server $server, array $controllers): void
     {
         

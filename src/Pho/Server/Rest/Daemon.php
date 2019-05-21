@@ -12,6 +12,7 @@
 namespace Pho\Server\Rest;
 
 use Pho\Kernel\Kernel;
+use React\EventLoop\LoopInterface;
 
 /**
  * The async/event-driven REST server daemon
@@ -26,9 +27,9 @@ class Daemon
     protected $port = 80;
     protected $formable_nodes = [];
 
-    public function __construct(Kernel $kernel)
+    public function __construct(Kernel $kernel, LoopInterface $loop = null)
     {
-        $this->server = new Server();
+        $this->server = new Server($loop);
         $this->kernel = $kernel;
         $this->initControllers();
         Router::init($this->server, $this->controllers);
@@ -39,6 +40,12 @@ class Daemon
         $this->port = $port;
     }
 
+    /**
+     * @todo I'm not sure what this is, find out!
+     *
+     * @param array $pairs
+     * @return void
+     */
     public function setFormableNodes(array $pairs): void
     {
         $set = function(string $key, string $class): void
@@ -50,6 +57,13 @@ class Daemon
         }
     }
 
+    /**
+     * @todo this is very dirty. routes and controllers must work in sync.
+     *
+     * @param string $base
+     * @param boolean $jsonp
+     * @return void
+     */
     protected function initControllers(string $base = __DIR__,  bool $jsonp = false): void
     {
         $build = function(array $classes) use ($jsonp): void
@@ -70,9 +84,9 @@ class Daemon
         }
     }
 
-    public function serve()
+    public function serve(bool $blocking = true)
     {
-        $this->server->listen($this->port, "0.0.0.0");
+        $this->server->setPort($this->port)->serve($blocking);
     }
 }
 

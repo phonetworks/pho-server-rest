@@ -11,6 +11,8 @@
 
 namespace Pho\Server\Rest;
 
+use React\EventLoop\LoopInterface;
+
 /**
  * REST Server
  * 
@@ -19,29 +21,47 @@ namespace Pho\Server\Rest;
  * 
  * @author Emre Sokullu <emre@phonetworks.org>
  */
-class Server extends \CapMousse\ReactRestify\Server
+class Server
 {
-    const VERSION = "1.1.0";
+    const VERSION = "2.0.0";
     const NAME = "PhoNetworks";
 
-    public function __construct()
+    protected $loop;
+    protected $port = 80;
+
+    public function __construct(LoopInterface $loop = null)
     {
-        parent::__construct(self::NAME, self::VERSION);
+        if(isset($loop)) {
+            $loop = \React\EventLoop\Factory::create();    
+        }
+        $this->loop = $loop;
+        
     }
 
-/*
-    protected function apiVersion(): string
+
+    public function apiVersion(): string
     {
         if(!preg_match("/^([0-9]+\.[0-9]+)\.[0-9]+$/", self::VERSION, $matches))
             throw new \Exception("Invalid Version");
         return $matches[1];
     }
 
-    public function get(string $matcher, Callable $callable) //: mixed
+    public function setPort(int $port): Server
     {
-        return $this->query
+        $this->port = $port;
+        return $this;
     }
-*/
+
+    public function serve(bool $blocking = true): void
+    {
+        $server = new \React\Http\Server($requestHandler);
+        $socket = new \React\Socket\Server($this->port, $this->loop);
+        $server->listen($socket);
+        if($blocking)
+            $this->loop->run();
+    }
+
+
     /**
      * Amplifies router add methods
      *
