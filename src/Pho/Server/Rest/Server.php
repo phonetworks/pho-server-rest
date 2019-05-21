@@ -126,7 +126,9 @@ class Server
 
     public function serve(bool $blocking = true): void
     {
-        $server = new \React\Http\Server($this->router->compile());
+        $server = new \React\Http\Server(
+            $this->router->compile($this->controllers)
+        );
         $socket = new \React\Socket\Server($this->port, $this->loop);
         $server->listen($socket);
         if($blocking)

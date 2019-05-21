@@ -11,4 +11,8 @@ return array(
     "getGetterEdges" => ['GET', '/{uuid}/edges/getters'],
     "getSetterEdges" => ['GET', '/{uuid}/edges/setters'],
     "getAllEdges" => ['GET', '/{uuid}/edges/all'],
+    "getIncomingEdges" => ['GET','/{uuid}/edges/in'],
+    "getOutgoingEdges" => ['GET', '/{uuid}/edges/out'],
+    "getEdgesByClass"  => ['GET', '/{uuid}/{edge:[a-zA-Z_]+}'],
+    "createEdge"  => ['POST', '/{uuid}/{edge:[a-zA-Z_]+}'],
 );

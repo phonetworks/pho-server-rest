@@ -11,10 +11,16 @@
 
 namespace Pho\Server\Rest\Controllers;
 
-use CapMousse\ReactRestify\Http\Response;
+use React\Http\Response;
 
 abstract class AbstractController
 {
+
+    const HEADERS = [
+        'Content-Type' => 'application/json',
+        'Charset'      => 'utf-8'
+    ];
+
     protected $kernel;
     protected $jsonp = false;
 
@@ -38,31 +44,33 @@ abstract class AbstractController
         return $this->jsonp ? "writeJsonP" : "writeJson";
     }
 
-    protected function succeed(Response $response): void
+    protected function succeed(): Response
     {
-        $method = $this->getWriteMethod();
-        $response
-            ->$method([
-                "success"=>true
-            ])
-            ->end();
+        return new Response(
+            200,
+            self::HEADERS,
+            $this->respond(true, "")
+        );
     }
 
-    protected function fail(Response $response, string $message = ""): void
+    private function respond(bool $success, string $message = ""): string
     {
-        if(empty($message))
-            $response
-                    ->setStatus(500)
-                    ->end();
-        else {
-            $method = $this->getWriteMethod();
-            $response
-                    ->setStatus(400)
-                    ->$method([
-                        "success" => false,
-                        "reason"   => $message
-                    ])
-                    ->end();
+        $response = json_encode([
+            "success" =>  $success,
+            "reason"   => $message
+        ]);
+        if($this->jsonp) {
+            $response = "p($response)";
         }
+        return $response;
+    }
+
+    protected function fail(string $message = "", int $code = 500): Response
+    {
+        return new Response(
+            $code,
+            self::HEADERS,
+            $this->respond(false, $message)
+        );
     }
 }

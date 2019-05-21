@@ -8,5 +8,10 @@
  */
 return array(
     "getAttributes" => ['GET', '/{uuid}/attributes'],
-    "setAttribute"  => ['PUT', '/{uuid}/attribute/{key}']
+    "setAttribute"  => ['PUT', '/{uuid}/attribute/{key}'],
+    "getEntityType" => ['GET', '/{uuid}/type'],
+    "getAttribute" => ['GET', '/{uuid}/attribute/{key}'],
+    "delete" => ['DELETE', '/{uuid}'],
+    "deleteAttribute" => ['DELETE', '/{uuid}/attribute/{key}'],
+    "setAttribute" => ['POST', '/{uuid}/attribute/{key}'],
 );
