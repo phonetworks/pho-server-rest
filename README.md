@@ -26,7 +26,7 @@ The recommended way to install pho-server-rest is through git. MacOS and most UN
 
 Once the REST Server is installed, you need a Pho Kernel to run it. You can install the standard Pho Kernel simply by typing:
 
-```
+```sh
 git submodule init
 git submodule update
 ```
@@ -36,6 +36,15 @@ Alternatively you may create your own kernel with a [custom recipe](https://gith
 Once the kernel is set up, you should install the dependencies using Composer as follows:
 
 ```composer install```
+
+Do not forget to install such dependencies for the submodule kernel as well. You would need to copy the composer.json from one of the [presets](https://github.com/phonetworks/pho-kernel/tree/master/presets) which determine the structure of the graph you are to build.
+
+```sh
+cd kernel
+cp presets/basic ./composer.json # any preset is fine
+composer install
+cd ..
+```
 
 ## FAQ
 
