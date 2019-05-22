@@ -65,7 +65,7 @@ abstract class AbstractController
         return $response;
     }
 
-    protected function fail(string $message = "", int $code = 500): Response
+    public function fail(string $message = "", int $code = 500): Response
     {
         return new Response(
             $code,
