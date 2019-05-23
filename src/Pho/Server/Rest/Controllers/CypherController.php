@@ -11,9 +11,9 @@
 
 namespace Pho\Server\Rest\Controllers;
 
-use CapMousse\ReactRestify\Http\Request;
-use CapMousse\ReactRestify\Http\Response;
 use Pho\Lib\Graph\ID;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class CypherController extends AbstractController 
 {
@@ -21,7 +21,7 @@ class CypherController extends AbstractController
     private const Q_NODES = "MATCH (n%s {%s}) RETURN n";
     private const Q_EDGES = "MATCH (%s)-[r%s {%s}]-(%s) RETURN r";
 
-    public function matchNodes(Request $request, Response $response) 
+    public function matchNodes(ServerRequestInterface $request, ResponseInterface $response)
     {
         //error_log("matching nodes");
         //$response->writeJson(["ok"=>"nene"])->end();
@@ -32,7 +32,7 @@ class CypherController extends AbstractController
         $vals = []; // values to query (key=>value)
         $cypher = ""; // final cypher query
 
-        $data = $request->httpRequest->getQueryParams();
+        $data = $request->getQueryParams();
         
         error_log("data is as follows: ".print_r($data, true));
         
@@ -56,14 +56,14 @@ class CypherController extends AbstractController
         //error_log("params will be as follows: ". print_r($data, true));
 
         $res = $this->kernel->index()->query($cypher, $data);
-        
-        $response->writeJson($res->results())->end();
 
-        // $this->fail($response);  
+        $response->getBody()->write(json_encode($res->results()));
+
+        return $response;
     }
 
 
-    public function matchEdges(Request $request, Response $response) 
+    public function matchEdges(ServerRequestInterface $request, ResponseInterface $response)
     {
         //error_log("matching edges");
         //$response->writeJson(["ok"=>"dede"])->end();
@@ -76,7 +76,7 @@ class CypherController extends AbstractController
         $tail_node = "";
         $head_node = "";
 
-        $data = $request->httpRequest->getQueryParams();
+        $data = $request->getQueryParams();
         
         if(isset($data["head"]) && !empty($data["head"])) {
             $head_node = sprintf("{udid: '%s'}", $data["head"]);
@@ -109,10 +109,10 @@ class CypherController extends AbstractController
         error_log("params will be as follows: ". print_r($data, true));
 
         $res = $this->kernel->index()->query($cypher, $data);
-        
-        $response->writeJson($res->results())->end();
 
-        // $this->fail($response);  
+        $response->getBody()->write(json_encode($res->results()));
+
+        return $response;
     }
 
 }

@@ -12,9 +12,11 @@
 namespace Pho\Server\Rest;
 
 use FastRoute\simpleDispatcher;
+use Pho\Server\Rest\Controllers\AbstractController;
 use Psr\Http\Message\ServerRequestInterface;
 use Pho\Kernel\Kernel;
 use FastRoute\Dispatcher;
+use React\Http\Response;
 
 /**
  * Determines routes
@@ -94,7 +96,16 @@ class Router
                 $this->kernel->logger()->info("Found: ".$handler . " --- ". print_r($vars, true));
                 // ... call $handler with $vars
                 // @todo This must be implemented
-                break;         
+                list($controllerName, $methodName) = explode('::', $routeInfo[1]);
+                if (null === $controller = $this->controllers[$controllerName] ?? null) {
+                    throw new \RuntimeException("Controller $controllerName not found");
+                }
+                if (! method_exists($controller, $methodName)) {
+                    throw new \RuntimeException("Method $methodName does not exist in controller $controllerName");
+                }
+                $response = new Response(200, AbstractController::HEADERS, null);
+                $response = call_user_func_array([ $controller, $methodName ], array_merge([ $request, $response ], $vars));
+                break;
         }
 
         return $response;
