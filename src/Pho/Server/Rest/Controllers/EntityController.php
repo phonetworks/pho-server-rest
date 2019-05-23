@@ -11,82 +11,81 @@
 
 namespace Pho\Server\Rest\Controllers;
 
-use CapMousse\ReactRestify\Http\Request;
-use CapMousse\ReactRestify\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class EntityController extends AbstractController 
 {
 
-    public function delete(Request $request, Response $response, string $uuid)
+    public function delete(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         try {
             $res = $this->kernel->gs()->entity($uuid);
         }
         catch(\Exception $e) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
         $res->destroy();
-        $this->succeed($response);
+
+        return $this->succeed();
     }
 
-     public function getAttributes(Request $request, Response $response, string $uuid)
+     public function getAttributes(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->entity($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
 
-        $response->writeJson(
-            array_keys($this->cache[$uuid]->attributes()->toArray())
-        )->end();
+        $response->getBody()->write(json_encode(array_keys($this->cache[$uuid]->attributes()->toArray())));
+
+        return $response;
     }
 
-    public function getAttribute(Request $request, Response $response, string $uuid, string $key)
+    public function getAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->entity($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
 
-        $response->writeJson($this->cache[$uuid]->attributes()->$key)->end();
+        $response->getBody()->write(json_encode($this->cache[$uuid]->attributes()->$key));
+
+        return $response;
     }
 
-    public function setAttribute(Request $request, Response $response, string $uuid, string $key)
+    public function setAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->entity($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
 
-        if(!$request->value) {
-            $this->fail($response);
-            return;
+        $json = json_decode($request->getBody()->getContents(), true);
+        if(! isset($json['value'])) {
+            return $this->fail();
         }
 
-        $this->cache[$uuid]->attributes()->$key = $request->value;
-        $this->succeed($response);
+        $this->cache[$uuid]->attributes()->$key = $json['value'];
+        return $this->succeed();
     }
 
-    public function getEntityType(Request $request, Response $response, string $uuid)
+    public function getEntityType(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         $type = "";
         switch($uuid[0]) {
@@ -115,28 +114,29 @@ class EntityController extends AbstractController
             default:
                 $type = "Unidentified"; break;
         }
-        $response->writeJson($type)->end();
+        $response->getBody()->write(json_encode($type));
+
+        return $response;
     }
 
-    public function deleteAttribute(Request $request, Response $response, string $uuid, string $key)
+    public function deleteAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->entity($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
 
         if(!isset($this->cache[$uuid]->attributes()->$key)) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
         unset($this->cache[$uuid]->attributes()->$key);
-        $this->succeed($response);
+
+        return $this->succeed();
     }
 
 }

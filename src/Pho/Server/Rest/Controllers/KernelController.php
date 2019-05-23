@@ -11,28 +11,28 @@
 
 namespace Pho\Server\Rest\Controllers;
 
-use CapMousse\ReactRestify\Http\Request;
-use CapMousse\ReactRestify\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class KernelController extends AbstractController
 {
     const STATIC_METHODS = ["founder", "graph", "space"];
     
-    public function getStatic(Request $request, Response $response, string $method)
+    public function getStatic(ServerRequestInterface $request, ResponseInterface $response, string $method)
     {
         if(!in_array($method, self::STATIC_METHODS)) {
             throw new \Exception("problem!!");
         }
         $res = $this->kernel->$method();
-        $response->writeJson(
-            array(
-                "id" => (string) $res->id(),
-                "class" => get_class($res)
-            )
-        )->end();
+        $response->getBody()->write(json_encode([
+            "id" => (string) $res->id(),
+            "class" => get_class($res),
+        ]));
+
+        return $response;
     }
 
-    public function createActor(Request $request, Response $response)
+    public function createActor(ServerRequestInterface $request, ResponseInterface $response)
     {
         $actor_class = "";
         $default_objects = $this->kernel->config()->default_objects->toArray();
@@ -42,34 +42,31 @@ class KernelController extends AbstractController
             $actor_class = $default_objects["founder"];
         else {
             // throw new \Exception("No Actor class defined.");
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
             
         $params = [];
+        $json = json_decode($request->getBody()->getContents(), true);
         for($i=1;$i<50;$i++) {
             $param = sprintf("param%s", (string) $i);
-            if(!$request->$param)
+            if(! isset($json[$param]))
                 continue;
-            $params[] = $request->$param;
+            $params[] = $json[$param];
         }
 
         try {
             $actor = new $actor_class($this->kernel, $this->kernel->graph(), ...$params);
         }
         catch(\Exception $e) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
         catch(\ArgumentCountError $e) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
 
-        $response->writeJson(
-            $actor->id()->toString()
-        )->end();
+        $response->getBody()->write(json_encode($actor->id()->toString()));
 
+        return $response;
     }
 
 }

@@ -11,25 +11,23 @@
 
 namespace Pho\Server\Rest\Controllers;
 
-use CapMousse\ReactRestify\Http\Request;
-use CapMousse\ReactRestify\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class EdgeController extends AbstractController 
 {
 
-    public function get(Request $request, Response $response, string $uuid)
+    public function get(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         if((int) $uuid[0] < 6) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
 
         try {
             $res = $this->kernel->gs()->edge($uuid);
         }
         catch(\Exception $e) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
         
         $edge = array();
@@ -41,7 +39,9 @@ class EdgeController extends AbstractController
         
         //$edge["id"]  = $res["id"];
         // predicate?
-        $response->writeJson($edge)->end();
+        $response->getBody()->write(json_encode($edge));
+
+        return $response;
     }
 
 }

@@ -11,9 +11,9 @@
 
 namespace Pho\Server\Rest\Controllers;
 
-use CapMousse\ReactRestify\Http\Request;
-use CapMousse\ReactRestify\Http\Response;
 use Pho\Lib\Graph\ID;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Stringy\StaticStringy;
 use Pho\Lib\Graph\EntityInterface;
 
@@ -21,19 +21,17 @@ class NodeController extends AbstractController
 {
     private $cache = [];
 
-    public function get(Request $request, Response $response, string $uuid)
+    public function get(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         if((int) $uuid[0] > 5) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
 
         try {
             $res = $this->kernel->gs()->node($uuid);
         }
         catch(\Exception $e) {
-            $this->fail($response);
-            return;
+            return $this->fail();
         }
         $node = $res->toArray();
         unset($node["acl"]);
@@ -42,18 +40,19 @@ class NodeController extends AbstractController
         unset($node["notifications"]);
         unset($node["registered_edges"]);
         $node["class"] = get_class($res);
-        $response->writeJson($node)->end();
+        $response->getBody()->write(json_encode($node));
+
+        return $response;
     }
 
-    private function getEdges(string $type="all", Request $request, Response $response, string $uuid)
+    private function getEdges(string $type="all", ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
@@ -69,25 +68,24 @@ class NodeController extends AbstractController
             foreach($edges["to"] as $id=>$to) {
                 $return["to"][$id] = array_values($to);
             }
-            $response->writeJson($return)->end();
+            $response->getBody()->write(json_encode($return));
+            return $response;
         }
         else
-            $response->writeJson(
-                array_values(
-                    $this->cache[$uuid]->edges()->toArray()[$type]
-                )
-            )->end();
+            $response->getBody()->write(json_encode(array_values(
+                $this->cache[$uuid]->edges()->toArray()[$type]
+            )));
+            return $response;
     }
 
-    private function getDirectionalEdges(string $type="from", Request $request, Response $response, string $uuid1, string $uuid2)
+    private function getDirectionalEdges(string $type="from", ServerRequestInterface $request, ResponseInterface $response, string $uuid1, string $uuid2)
     {
         if(!isset($this->cache[$uuid1])) {
             try {
                 $res = $this->kernel->gs()->node($uuid1);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid1] = $res;
         }
@@ -98,43 +96,44 @@ class NodeController extends AbstractController
         $edges = array_keys(
             iterator_to_array($this->cache[$uuid1]->edges()->$type(ID::fromString($uuid2)))
         );
-        $response->writeJson($edges)->end();
+        $response->getBody()->write(json_encode($edges));
+
+        return $response;
     }
 
-    public function getAllEdges(Request $request, Response $response, string $uuid)
+    public function getAllEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
-        $this->getEdges("all", ...func_get_args());
+        return $this->getEdges("all", ...func_get_args());
     }
 
-    public function getIncomingEdges(Request $request, Response $response, string $uuid)
+    public function getIncomingEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
-        $this->getEdges("in", ...func_get_args());
+        return $this->getEdges("in", ...func_get_args());
     }
 
-    public function getOutgoingEdges(Request $request, Response $response, string $uuid)
+    public function getOutgoingEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
-        $this->getEdges("out", ...func_get_args());
+        return $this->getEdges("out", ...func_get_args());
     }
 
-    public function getEdgesFrom(Request $request, Response $response, string $uuid1, string $uuid2)
+    public function getEdgesFrom(ServerRequestInterface $request, ResponseInterface $response, string $uuid1, string $uuid2)
     {
-        $this->getDirectionalEdges("from", ...func_get_args());
+        return $this->getDirectionalEdges("from", ...func_get_args());
     }
 
-    public function getEdgesTo(Request $request, Response $response, string $uuid1, string $uuid2)
+    public function getEdgesTo(ServerRequestInterface $request, ResponseInterface $response, string $uuid1, string $uuid2)
     {
-        $this->getDirectionalEdges("to", ...func_get_args());
+        return $this->getDirectionalEdges("to", ...func_get_args());
     }
 
-    public function getGetterEdges(Request $request, Response $response, string $uuid)
+    public function getGetterEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
@@ -154,18 +153,19 @@ class NodeController extends AbstractController
                 )
             )
         );
-        $response->writeJson($getters)->end();
+        $response->getBody()->write(json_encode($getters));
+
+        return $response;
     }
 
-    public function getSetterEdges(Request $request, Response $response, string $uuid)
+    public function getSetterEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
@@ -184,18 +184,19 @@ class NodeController extends AbstractController
                 )
             )
         );
-        $response->writeJson($setters)->end();
+        $response->getBody()->write(json_encode($setters));
+
+        return $response;
     }
 
-    public function getEdgesByClass(Request $request, Response $response, string $uuid, string $edge)
+    public function getEdgesByClass(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $edge)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
@@ -217,7 +218,7 @@ class NodeController extends AbstractController
             foreach($res as $entity) {
                 $return[] = (string) $entity->id();
             }
-            $response->writeJson($return)->end();
+            $response->getBody()->write(json_encode($return));
         };
 
         $handleSingular = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): bool
@@ -227,7 +228,7 @@ class NodeController extends AbstractController
             $res = $this->cache[$uuid]->$method();
             if($res instanceof EntityInterface)
             {
-                $response->writeJson([(string) $res->id()])->end();
+                $response->getBody()->write(json_encode([(string) $res->id()]));
                 return true;
             }
             return false;
@@ -240,7 +241,7 @@ class NodeController extends AbstractController
             $checkEdgeName($cargo["out"]->callable_edge_labels)
         ) {
             $handlePlural();
-            return;
+            return $response;
         }
         
         if(
@@ -250,28 +251,27 @@ class NodeController extends AbstractController
             ($checkEdgeName($cargo["out"]->callable_edge_singularLabels) && $handleSingular())
         )
         {
-                return;
+                return $response;
         }
         //error_log("nothing found for {$edge} while \$cargo is: ".print_r($cargo, true));
-        $this->fail($response);
+        return $this->fail();
     }
 
-    public function createEdge(Request $request, Response $response, string $uuid, string $edge) 
+    public function createEdge(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $edge)
     {
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
             }
             catch(\Exception $e) {
-                $this->fail($response);
-                return;
+                return $this->fail();
             }
             $this->cache[$uuid] = $res;
         }
-        
-        if(!$request->param1) {
-            $this->fail($response);
-            return;
+
+        $json = json_decode($request->getBody()->getContents(), true);
+        if(! isset($json['param1'])) {
+            return $this->fail();
         }
         
         $cargo = $this->cache[$uuid]->exportCargo();
@@ -279,24 +279,25 @@ class NodeController extends AbstractController
             $params = [];
             for($i=1;$i<50;$i++) {
                 $param = sprintf("param%s", (string) $i);
-                if(!$request->$param)
+                if(! isset($json[$param]))
                     continue;
-                if(preg_match('/^[0-9a-fA-F\-]{36}$/', $request->$param)) {
+                if(preg_match('/^[0-9a-fA-F\-]{36}$/', $json[$param])) {
                     try {
-                        $tmp = $this->kernel->gs()->entity($request->$param);
+                        $tmp = $this->kernel->gs()->entity($json[$param]);
                         $params[] = $tmp;
                         continue;
                     }
                     catch(\Exception $e) {}
                 }
-                $params[] = $request->$param;
+                $params[] = $json[$param];
             }
             $res = $this->cache[$uuid]->$edge(...$params);
-            $response->writeJson($res->id()->toString())->end();
-            return;
+            $response->getBody()->write(json_encode($res->id()->toString()));
+
+            return $response;
         }
         
-        $this->fail($response);
+        return $this->fail();
     }
 
 }
