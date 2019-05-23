@@ -13,5 +13,5 @@ return array(
     "getAttribute" => ['GET', '/{uuid}/attribute/{key}'],
     "delete" => ['DELETE', '/{uuid}'],
     "deleteAttribute" => ['DELETE', '/{uuid}/attribute/{key}'],
-    "setAttribute" => ['POST', '/{uuid}/attribute/{key}'],
+    "setAttribute_POST" => ['POST', '/{uuid}/attribute/{key}'],
 );

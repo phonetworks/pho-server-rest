@@ -85,6 +85,11 @@ class EntityController extends AbstractController
         return $this->succeed();
     }
 
+    public function setAttribute_POST()
+    {
+        return call_user_func_array([ $this, 'setAttribute' ], func_get_args());
+    }
+
     public function getEntityType(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
         $type = "";
