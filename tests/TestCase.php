@@ -74,7 +74,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function post(string $path, array $postData, bool $headers = false)
     {
-        $res = $this->client->request('POST', self::HOST . $path, ['form_params' => $postData]);
+        $res = $this->client->request('POST', self::HOST . $path, [ \GuzzleHttp\RequestOptions::JSON => $postData]);
         if ($headers) {
             return $res;
         }

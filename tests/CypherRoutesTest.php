@@ -20,7 +20,7 @@ class CypherRoutesTest extends TestCase
         $res = $this->get('/nodes?email='.urlencode($email));
         $this->assertCount(1, $res);
         $body = $res[0];
-        $this->assertEquals($body["udid"], $this->founder_id);
+        $this->assertEquals($body["n.udid"], $this->founder_id);
     }
 
     public function testMatchNodesByMultipleAttribute()
@@ -35,7 +35,7 @@ class CypherRoutesTest extends TestCase
         $res = $this->get('/nodes?email='.urlencode($email)."&About=".urlencode($about_me));
         $this->assertCount(1, $res);
         $body = $res[0];
-        $this->assertEquals($body["udid"], $this->founder_id);
+        $this->assertEquals($body["n.udid"], $this->founder_id);
     }
 
     public function testMatchEdgesByAdjacentNodes()
