@@ -77,7 +77,7 @@ class EntityController extends AbstractController
         }
 
         $json = json_decode($request->getBody()->getContents(), true);
-        if(! isset($json['value'])) {
+        if(! $json['value']) {
             return $this->fail();
         }
 

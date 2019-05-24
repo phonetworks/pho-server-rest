@@ -64,6 +64,12 @@ class Router
             return str_replace("{uuid}", "{uuid:[0-9a-fA-F]{32}}", $path);
         };
         $this->dispatcher = \FastRoute\simpleDispatcher(function(\FastRoute\RouteCollector $r) use ($routes, $resolvePath) {
+
+            // load kernel routes at last
+            uksort($routes, function ($a, $b) {
+                return $a === 'kernel';
+            });
+
             foreach($routes as $controller => $handlers) {
                 foreach($handlers as $handler => $route) {
                     $method = $route[0];
@@ -107,6 +113,8 @@ class Router
                 $response = call_user_func_array([ $controller, $methodName ], array_merge([ $request, $response ], $vars));
                 break;
         }
+
+        $response = $response->withHeader('Server', Server::NAME);
 
         return $response;
     }
