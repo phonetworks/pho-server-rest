@@ -104,10 +104,12 @@ class Router
                 // @todo This must be implemented
                 list($controllerName, $methodName) = explode('::', $routeInfo[1]);
                 if (null === $controller = $this->controllers[$controllerName] ?? null) {
-                    throw new \RuntimeException("Controller $controllerName not found");
+                    error_log("Controller $controllerName not found");
+                    return $this->controllers['kernel']->fail();
                 }
                 if (! method_exists($controller, $methodName)) {
-                    throw new \RuntimeException("Method $methodName does not exist in controller $controllerName");
+                    error_log("Method $methodName does not exist in controller $controllerName");
+                    return $this->controllers['kernel']->fail();
                 }
                 $response = new Response(200, AbstractController::HEADERS, null);
                 $response = call_user_func_array([ $controller, $methodName ], array_merge([ $request, $response ], $vars));

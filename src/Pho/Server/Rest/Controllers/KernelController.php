@@ -21,7 +21,8 @@ class KernelController extends AbstractController
     public function getStatic(ServerRequestInterface $request, ResponseInterface $response, string $method)
     {
         if(!in_array($method, self::STATIC_METHODS)) {
-            throw new \Exception("problem!!");
+            error_log("problem!!");
+            return $this->fail();
         }
         $res = $this->kernel->$method();
         $response->getBody()->write(json_encode([
