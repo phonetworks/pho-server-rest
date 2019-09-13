@@ -8,3 +8,8 @@
 ## 2.1 to 3.0
 
 * React-HTTP 
+
+## 3.0 to 3.1
+
+* GraphJS compatibility with succeed and fail methods
+* unit tests changed accordingly
