@@ -47,7 +47,7 @@ class Router
         $route_files = scandir($routes_dir);
         foreach ($route_files as $file) {
             if(!in_array($file, [".", ".."])) {
-                $this->routes[$reformat($file)] = include($routes_dir.$file);
+                $this->routes[$reformat($file)] = include($routes_dir.DIRECTORY_SEPARATOR.$file);
             }
         }
     }
