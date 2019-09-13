@@ -125,7 +125,7 @@ class Server
         return $this;
     }
 
-    public function withMiddleware(\Object $middleware)
+    public function withMiddleware(/*\Object*/ $middleware)
     {
         $this->middlewares[] = $middleware;
     }
