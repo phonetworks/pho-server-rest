@@ -40,9 +40,8 @@ class NodeController extends AbstractController
         unset($node["notifications"]);
         unset($node["registered_edges"]);
         $node["class"] = get_class($res);
-        $response->getBody()->write(json_encode($node));
 
-        return $response;
+        return $this->succeed($response, $node);
     }
 
     private function getEdges(string $type="all", ServerRequestInterface $request, ResponseInterface $response, string $uuid)
@@ -68,14 +67,12 @@ class NodeController extends AbstractController
             foreach($edges["to"] as $id=>$to) {
                 $return["to"][$id] = array_values($to);
             }
-            $response->getBody()->write(json_encode($return));
-            return $response;
+            return $this->succeed($response, $return);
         }
-        else
-            $response->getBody()->write(json_encode(array_values(
-                $this->cache[$uuid]->edges()->toArray()[$type]
-            )));
-            return $response;
+        
+        return $this->succeed($response, array_values(
+            $this->cache[$uuid]->edges()->toArray()[$type]
+        ));
     }
 
     private function getDirectionalEdges(string $type="from", ServerRequestInterface $request, ResponseInterface $response, string $uuid1, string $uuid2)
@@ -96,9 +93,8 @@ class NodeController extends AbstractController
         $edges = array_keys(
             iterator_to_array($this->cache[$uuid1]->edges()->$type(ID::fromString($uuid2)))
         );
-        $response->getBody()->write(json_encode($edges));
 
-        return $response;
+        return $this->succeed($response, $edges);
     }
 
     public function getAllEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
@@ -153,9 +149,7 @@ class NodeController extends AbstractController
                 )
             )
         );
-        $response->getBody()->write(json_encode($getters));
-
-        return $response;
+        return $this->succeed($response, $getters);
     }
 
     public function getSetterEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
@@ -184,9 +178,7 @@ class NodeController extends AbstractController
                 )
             )
         );
-        $response->getBody()->write(json_encode($setters));
-
-        return $response;
+        return $this->succeed($response, $setters);
     }
 
     public function getEdgesByClass(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $edge)
@@ -209,7 +201,7 @@ class NodeController extends AbstractController
             return \in_array($edge_camelized, $haystack);
         };
 
-        $handlePlural = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): void
+        $handlePlural = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ &$response): void
         {
             $method = "get" . StaticStringy::upperCamelize($edge);
             error_log("method would be: ".$method);
@@ -218,17 +210,17 @@ class NodeController extends AbstractController
             foreach($res as $entity) {
                 $return[] = (string) $entity->id();
             }
-            $response->getBody()->write(json_encode($return));
+            $response = $this->succeed($response, $return);
         };
 
-        $handleSingular = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ $response): bool
+        $handleSingular = function() use(/*string*/ $edge, /*string*/ $uuid, /*Response*/ &$response): bool
         {
             $method = "get" . StaticStringy::upperCamelize($edge);
             error_log("singular method would be: ".$method);
             $res = $this->cache[$uuid]->$method();
             if($res instanceof EntityInterface)
             {
-                $response->getBody()->write(json_encode([(string) $res->id()]));
+                $response = $this->succeed($response, [(string) $res->id()]);
                 return true;
             }
             return false;
@@ -292,11 +284,8 @@ class NodeController extends AbstractController
                 $params[] = $json[$param];
             }
             $res = $this->cache[$uuid]->$edge(...$params);
-            $response->getBody()->write(json_encode($res->id()->toString()));
-
-            return $response;
+            return $this->succeed($response, ["id"=>$res->id()->toString()]);
         }
-        
         return $this->fail();
     }
 

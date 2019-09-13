@@ -74,7 +74,8 @@ class NodeRoutesTest extends TestCase
     {
         $post_res = $this->post('/' . $this->founder_id . '/post', ['param1' => 'This is new tweet']);
         //eval(\Psy\sh());
-        $this->assertTrue((bool)preg_match('/^[0-9a-fA-F]{32}$/', $post_res));
+        $this->assertTrue($post_res["success"]);
+        $this->assertTrue((bool)preg_match('/^[0-9a-fA-F]{32}$/', $post_res["id"]));
         //$this->assertSame($post_res['success'], true);
     }
 

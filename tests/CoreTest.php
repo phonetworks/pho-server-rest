@@ -15,6 +15,7 @@ class CoreTest extends TestCase
     public function test404() {
         $this->expectException(\GuzzleHttp\Exception\ClientException::class);
         $res = $this->get('/');
+        //$this->assertEquals(500, $res->getStatusCode());
     }
 
     public function testHeaders() {

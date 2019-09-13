@@ -25,12 +25,10 @@ class KernelController extends AbstractController
             return $this->fail();
         }
         $res = $this->kernel->$method();
-        $response->getBody()->write(json_encode([
+        return $this->succeed($response, [
             "id" => (string) $res->id(),
             "class" => get_class($res),
-        ]));
-
-        return $response;
+        ]);
     }
 
     public function createActor(ServerRequestInterface $request, ResponseInterface $response)
@@ -65,9 +63,10 @@ class KernelController extends AbstractController
             return $this->fail();
         }
 
-        $response->getBody()->write(json_encode($actor->id()->toString()));
-
-        return $response;
+        return $this->succeed(
+            $response, 
+            ["id"=>$actor->id()->toString()]
+        );
     }
 
 }

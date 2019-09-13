@@ -39,9 +39,7 @@ class EdgeController extends AbstractController
         
         //$edge["id"]  = $res["id"];
         // predicate?
-        $response->getBody()->write(json_encode($edge));
-
-        return $response;
+        return $this->succeed($response, ($edge));
     }
 
 }

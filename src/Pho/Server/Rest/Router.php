@@ -89,11 +89,11 @@ class Router
         switch ($routeInfo[0]) {
             
             case Dispatcher::NOT_FOUND:
-                $response = $this->controllers["kernel"]->fail("Not Found", 404);
+                $response = $this->controllers["kernel"]->fail(null, "Not Found", 404);
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = $routeInfo[1];
-                $response = $this->controllers["kernel"]->fail("Allowed Methods: ".join(', ', array_unique($allowedMethods)), 405);
+                $response = $this->controllers["kernel"]->fail(null, "Allowed Methods: ".join(', ', array_unique($allowedMethods)), 405);
                 break;
                 
             case Dispatcher::FOUND:
@@ -111,7 +111,7 @@ class Router
                     error_log("Method $methodName does not exist in controller $controllerName");
                     return $this->controllers['kernel']->fail();
                 }
-                $response = new Response(200, AbstractController::HEADERS, null);
+                $response = new Response;
                 $response = call_user_func_array([ $controller, $methodName ], array_merge([ $request, $response ], $vars));
                 break;
         }

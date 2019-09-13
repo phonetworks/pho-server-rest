@@ -42,9 +42,7 @@ class EntityController extends AbstractController
             $this->cache[$uuid] = $res;
         }
 
-        $response->getBody()->write(json_encode(array_keys($this->cache[$uuid]->attributes()->toArray())));
-
-        return $response;
+        return $this->succeed($response, (array_keys($this->cache[$uuid]->attributes()->toArray())));
     }
 
     public function getAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)
@@ -59,7 +57,7 @@ class EntityController extends AbstractController
             $this->cache[$uuid] = $res;
         }
 
-        $response->getBody()->write(json_encode($this->cache[$uuid]->attributes()->$key));
+        return $this->succeed($response, [$key=>($this->cache[$uuid]->attributes()->$key)]);
 
         return $response;
     }
@@ -119,9 +117,7 @@ class EntityController extends AbstractController
             default:
                 $type = "Unidentified"; break;
         }
-        $response->getBody()->write(json_encode($type));
-
-        return $response;
+        return $this->succeed($response, ["type"=>($type)]);
     }
 
     public function deleteAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)

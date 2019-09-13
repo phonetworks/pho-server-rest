@@ -26,7 +26,8 @@ class EntityRoutesTest extends TestCase
     public function testEntityType()
     {
         $res = $this->get('/' . $this->founder_id . '/type');
-        $this->assertEquals("Actor Node", $res);
+        $this->assertArrayHasKey("success", $res);
+        $this->assertArraySubset(["type"=>"Actor Node"], $res);
     }
 
     public function testGetUnexistingAttribute()
@@ -46,7 +47,7 @@ class EntityRoutesTest extends TestCase
         $body = $this->get('/' . $this->founder_id . '/attributes');
         $this->assertContains("NewAttribute", $body);
         $body = $this->get('/' . $this->founder_id . '/attribute/NewAttribute');
-        $this->assertSame($text, $body);
+        $this->assertSame(["success"=>true, "NewAttribute"=>$text], $body);
     }
 
     /**
@@ -69,7 +70,7 @@ class EntityRoutesTest extends TestCase
         $body = $this->get('/' . $this->founder_id . '/attributes');
         $this->assertContains("NewAttribute", $body);
         $body = $this->get('/' . $this->founder_id . '/attribute/NewAttribute');
-        $this->assertSame($text, $body);
+        $this->assertSame(["success"=>true, "NewAttribute"=>$text], $body);
     }
 
     /**

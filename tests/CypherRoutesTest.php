@@ -18,8 +18,9 @@ class CypherRoutesTest extends TestCase
         $this->post('/' . $this->founder_id . '/attribute/email', ['value' => $email]);
         sleep(1);
         $res = $this->get('/nodes?email='.urlencode($email));
-        $this->assertCount(1, $res);
-        $body = $res[0];
+        
+        $this->assertArrayHasKey("success", $res);$this->assertCount(2, $res);
+        $body = $res["results"][0];
         $this->assertEquals($body["n.udid"], $this->founder_id);
     }
 
@@ -33,18 +34,21 @@ class CypherRoutesTest extends TestCase
         $this->post('/' . $this->founder_id . '/attribute/About', ['value' => $about_me]);
         sleep(1);
         $res = $this->get('/nodes?email='.urlencode($email)."&About=".urlencode($about_me));
-        $this->assertCount(1, $res);
-        $body = $res[0];
-        $this->assertEquals($body["n.udid"], $this->founder_id);
+        $this->assertArrayHasKey("success", $res);
+        $this->assertCount(2, $res);
+        $body = $res["results"];
+        //eval(\Psy\sh());
+        $this->assertCount(1, $body);
+        $this->assertEquals($body[0]["n.udid"], $this->founder_id);
     }
 
     public function testMatchEdgesByAdjacentNodes()
     {
         $tweet = $this->faker->realText(130);
         $post_res = $this->post('/' . $this->founder_id . '/post', ['param1' => $tweet]);
-        $res = $this->get('/edges?tail='.urlencode($this->founder_id)."&head=".urlencode($post_res));
-        $this->assertCount(1, $res);
-     //   eval(\Psy\sh());
+        $res = $this->get('/edges?tail='.urlencode($this->founder_id)."&head=".urlencode($post_res["id"]));
+        $this->assertTrue($res["success"]);
+        $this->assertCount(1, $res["results"]);
     }
 
 }

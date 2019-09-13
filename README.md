@@ -46,6 +46,12 @@ composer install
 cd ..
 ```
 
+## Unit Testing
+
+In order to run tests, make sure the REST server is running. For that, you'll need to type in `php run.php` while in the root folder, ensuring the kernel submodule was initialized and set up with the right recipe, and environment variables are properly entered.
+
+Once the server is up and running, you may run the unit tests by typing `vendor/bin/phpunit`, assuming that you have already installed the dependencies.
+
 ## FAQ
 
 **How do I change the port?**

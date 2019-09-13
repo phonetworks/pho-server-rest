@@ -32,6 +32,7 @@ class Server
     protected $port = 80;
     protected $formable_nodes = [];
     protected $jsonp = false;
+    protected $middlewares=[];
 
     public function __construct(Kernel $kernel, LoopInterface $loop = null)
     {
@@ -122,6 +123,11 @@ class Server
     {
         $this->router->initRoutes($directory);
         return $this;
+    }
+
+    public function withMiddleware(\Object $middleware)
+    {
+        $this->middlewares[] = $middleware;
     }
 
     public function serve(bool $blocking = true): void

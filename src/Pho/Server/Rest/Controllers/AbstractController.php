@@ -12,6 +12,7 @@
 namespace Pho\Server\Rest\Controllers;
 
 use React\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class AbstractController
 {
@@ -44,33 +45,51 @@ abstract class AbstractController
         return $this->jsonp ? "writeJsonP" : "writeJson";
     }
 
-    protected function succeed(): Response
+    protected function succeed(?ResponseInterface $response = null, array $data = []): Response
     {
-        return new Response(
-            200,
-            self::HEADERS,
-            $this->respond(true, "")
+        if(is_null($response)) {
+            $response = new Response(
+                200,
+                self::HEADERS
+            );
+        }
+        
+        $response->getBody()->write(
+            $this->respond(true, $data)
         );
+
+        return $response->withStatus(200);
     }
 
-    private function respond(bool $success, string $message = ""): string
+    public function fail(?ResponseInterface $response = null, string $message = "", int $code = 500): Response
     {
-        $response = json_encode([
-            "success" =>  $success,
-            "reason"   => $message
-        ]);
+        if(is_null($response)) {
+            $response = new Response(
+                $code,
+                self::HEADERS
+            );
+        }
+
+        $response->getBody()->write(
+            $this->respond(false, ["reason"=>$message])
+        );
+        
+        return $response->withStatus($code);
+    }
+
+    private function respond(bool $success, array $data = []): string
+    {
+        $response = json_encode(
+                        array_merge(
+                            ["success" =>  $success], 
+                            $data
+                        )
+        );
+
         if($this->jsonp) {
             $response = "p($response)";
         }
+        
         return $response;
-    }
-
-    public function fail(string $message = "", int $code = 500): Response
-    {
-        return new Response(
-            $code,
-            self::HEADERS,
-            $this->respond(false, $message)
-        );
     }
 }

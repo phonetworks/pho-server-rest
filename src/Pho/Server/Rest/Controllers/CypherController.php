@@ -57,9 +57,7 @@ class CypherController extends AbstractController
 
         $res = $this->kernel->index()->query($cypher, $data);
 
-        $response->getBody()->write(json_encode($res->results()));
-
-        return $response;
+        return $this->succeed($response, ["results"=>$res->results()]);
     }
 
 
@@ -110,9 +108,7 @@ class CypherController extends AbstractController
 
         $res = $this->kernel->index()->query($cypher, $data);
 
-        $response->getBody()->write(json_encode(($res->results())));
-
-        return $response;
+        return $this->succeed($response, ["results"=>($res->results())]);
     }
 
 }
