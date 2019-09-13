@@ -92,4 +92,21 @@ abstract class AbstractController
         
         return $response;
     }
+
+
+    protected function handleException(ResponseInterface $response, /*\Exception|\Error*/ $e): void
+    {
+        $this->fail($response, sprintf(
+            "An exception occurred: %s",
+            $e->getMessage()
+        ));
+    }
+
+    public function setExceptionHandler(ResponseInterface $response): self
+    {
+        @set_exception_handler(function(/*\Exception|\Error*/ $e) use ($response) {
+            $this->handleException($response, $e);
+        });
+        return $this;
+    }
 }
