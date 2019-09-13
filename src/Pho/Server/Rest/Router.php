@@ -112,7 +112,7 @@ class Router
                     return $this->controllers['kernel']->fail();
                 }
                 $response = new Response;
-                $response = call_user_func_array([ $controller, $methodName ], array_merge([ $request, $response ], $vars));
+                $response = call_user_func_array([ $controller->setExceptionHandler($response), $methodName ], array_merge([ $request, $response ], $vars));
                 break;
         }
 
