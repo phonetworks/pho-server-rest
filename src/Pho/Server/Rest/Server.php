@@ -132,8 +132,9 @@ class Server
 
     public function serve(bool $blocking = true): void
     {
+        $this->middlewares[] = $this->router->compile($this->controllers);
         $server = new \React\Http\Server(
-            $this->router->compile($this->controllers)
+            $this->middlewares
         );
         $socket = new \React\Socket\Server($this->port, $this->loop);
         $server->listen($socket);
