@@ -13,3 +13,7 @@
 
 * GraphJS compatibility with succeed and fail methods
 * unit tests changed accordingly
+
+## 3.1 to 3.2
+
+* Route format changed to accomodate multiple paths refer to the same function
