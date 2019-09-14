@@ -7,6 +7,6 @@
  * 
  */
 return array(
-    "getStatic" => ['GET', '/{method:.+}'],
-    "createActor" => ['POST', '/actor']
+    ['GET', '/{method:.+}',"getStatic"],
+    ['POST', '/actor',"createActor"]
 );

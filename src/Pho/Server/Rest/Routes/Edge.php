@@ -9,5 +9,5 @@
  */
 
 return array(
-    "get" => ['GET', '/edge/{uuid}']
+    ['GET', '/edge/{uuid}',"get"]
 );

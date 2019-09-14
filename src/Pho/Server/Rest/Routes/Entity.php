@@ -7,11 +7,11 @@
  * 
  */
 return array(
-    "getAttributes" => ['GET', '/{uuid}/attributes'],
-    "setAttribute"  => ['PUT', '/{uuid}/attribute/{key}'],
-    "getEntityType" => ['GET', '/{uuid}/type'],
-    "getAttribute" => ['GET', '/{uuid}/attribute/{key}'],
-    "delete" => ['DELETE', '/{uuid}'],
-    "deleteAttribute" => ['DELETE', '/{uuid}/attribute/{key}'],
-    "setAttribute_POST" => ['POST', '/{uuid}/attribute/{key}'],
+    ['GET', '/{uuid}/attributes',"getAttributes"],
+    ['PUT', '/{uuid}/attribute/{key}', "setAttribute"],
+    ['GET', '/{uuid}/type',"getEntityType"],
+    ['GET', '/{uuid}/attribute/{key}',"getAttribute"],
+    ['DELETE', '/{uuid}',"delete"],
+    ['DELETE', '/{uuid}/attribute/{key}',"deleteAttribute"],
+    ['POST', '/{uuid}/attribute/{key}',"setAttribute_POST"],
 );

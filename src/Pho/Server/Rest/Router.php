@@ -71,9 +71,10 @@ class Router
             });
 
             foreach($routes as $controller => $handlers) {
-                foreach($handlers as $handler => $route) {
+                foreach($handlers as $route) {
                     $method = $route[0];
                     $path = $resolvePath($route[1]);
+                    $handler = $route[2];
                     $r->addRoute($method, $path, "{$controller}::{$handler}");
                 }
             }

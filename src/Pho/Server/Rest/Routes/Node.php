@@ -7,12 +7,12 @@
  * 
  */
 return array(
-    "get" => ['GET', '/{uuid}'],
-    "getGetterEdges" => ['GET', '/{uuid}/edges/getters'],
-    "getSetterEdges" => ['GET', '/{uuid}/edges/setters'],
-    "getAllEdges" => ['GET', '/{uuid}/edges/all'],
-    "getIncomingEdges" => ['GET','/{uuid}/edges/in'],
-    "getOutgoingEdges" => ['GET', '/{uuid}/edges/out'],
-    "getEdgesByClass"  => ['GET', '/{uuid}/{edge:[a-zA-Z_]+}'],
-    "createEdge"  => ['POST', '/{uuid}/{edge:[a-zA-Z_]+}'],
+    ['GET', '/{uuid}',"get"],
+    ['GET', '/{uuid}/edges/getters',"getGetterEdges"],
+    ['GET', '/{uuid}/edges/setters',"getSetterEdges"],
+    ['GET', '/{uuid}/edges/all',"getAllEdges"],
+    ['GET','/{uuid}/edges/in',"getIncomingEdges"],
+    ['GET', '/{uuid}/edges/out',"getOutgoingEdges"],
+    ['GET', '/{uuid}/{edge:[a-zA-Z_]+}', "getEdgesByClass"],
+    ['POST', '/{uuid}/{edge:[a-zA-Z_]+}', "createEdge"],
 );

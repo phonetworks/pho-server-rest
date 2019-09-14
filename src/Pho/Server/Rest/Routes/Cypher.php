@@ -8,6 +8,6 @@
  */
 
 return array(
-    "matchEdges" => ['GET', '/edges'],
-    "matchNodes"  => ['GET', '/nodes']
+    ['GET', '/edges', "matchEdges"],
+    ['GET', '/nodes', "matchNodes"]
 );
