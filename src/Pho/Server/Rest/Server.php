@@ -34,14 +34,14 @@ class Server
     protected $jsonp = false;
     protected $middlewares=[];
 
-    public function __construct(Kernel $kernel, LoopInterface $loop = null)
+    public function __construct(Kernel $kernel, ?LoopInterface &$loop = null)
     {
         $this->kernel = $kernel;
         $this->router = new Router($kernel);
         if(!isset($loop)) {
             $loop = \React\EventLoop\Factory::create();    
         }
-        $this->loop = $loop;
+        $this->loop = &$loop;
         $controller_dir = __DIR__ . DIRECTORY_SEPARATOR . "Controllers";
         $this->addControllers($controller_dir);
     }
