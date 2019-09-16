@@ -34,9 +34,9 @@ class Server
     protected $jsonp = false;
     protected $middlewares=[];
 
-    public function __construct(Kernel $kernel, ?LoopInterface &$loop = null)
+    public function __construct(Kernel &$kernel, ?LoopInterface &$loop = null)
     {
-        $this->kernel = $kernel;
+        $this->kernel = &$kernel;
         $this->router = new Router($kernel);
         if(!isset($loop)) {
             $loop = \React\EventLoop\Factory::create();    
@@ -128,7 +128,7 @@ class Server
     public function withRoutes(string $directory): self
     {
         if(file_exists($directory))
-            $this->router->init($directory);
+            $this->router->bootstrap($directory);
         return $this;
     }
 
@@ -136,7 +136,7 @@ class Server
     {
         $this->middlewares[] = $middleware;
     }
-    
+
     public function serve(bool $blocking = true): void
     {
         $this->middlewares[] = $this->router->compile($this->controllers);
