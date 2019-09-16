@@ -46,6 +46,21 @@ composer install
 cd ..
 ```
 
+To run the server, you must execute the [run.php](https://github.com/phonetworks/pho-server-rest/tree/master/run.php) file. Alternatively, you may call the server programmatically:
+
+```php
+<?php
+require "vendor/autoload.php";
+include("PATH/TO/YOUR/KERNEL");
+$server = new \Pho\Server\Rest\Server($kernel);
+$server->bootstrap()->setPort(8080);
+$server->serve();
+```
+
+Please note, as of 3.3.0, you must use the `bootstrap` call to prepare the routes and controllers to warm up.
+before the server is run with the `serve` command. In case you'd like to skip the routes, you may skip the
+`bootstrap` phase and install your own routers and controllers via `withControllers` and `withRoutes` methods.
+
 ## Unit Testing
 
 In order to run tests, make sure the REST server is running. For that, you'll need to type in `php run.php` while in the root folder, ensuring the kernel submodule was initialized and set up with the right recipe, and environment variables are properly entered.

@@ -30,16 +30,23 @@ class Router
     protected $dispatcher; 
     protected $routes = [];
     protected $controllers = [];
+    protected $routes_dir = "";
 
     public function __construct(Kernel $kernel)
     {
         $this->kernel = $kernel;
-        $routes_dir = __DIR__ . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR;
-        $this->initRoutes($routes_dir);
+        $this->routes_dir = __DIR__ . DIRECTORY_SEPARATOR . "Routes" . DIRECTORY_SEPARATOR;
     }
 
-    public function initRoutes(string $routes_dir): void
+    public function reset(): void
     {
+        $this->routes = [];
+    }
+
+    public function bootstrap(string $routes_dir = ""): void
+    {
+        if(empty($routes_dir))
+            $routes_dir = $this->routes_dir;
         $reformat = function(string $file): string 
         {
             return str_replace(".php", "", lcfirst($file));

@@ -17,3 +17,8 @@
 ## 3.1 to 3.2
 
 * Route format changed to accomodate multiple paths refer to the same function
+
+## 3.2 to 3.3
+
+* API changes; You must use the `bootstrap` call to prepare the routes and controllers.
+* addControllers now called withControllers

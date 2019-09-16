@@ -42,8 +42,14 @@ class Server
             $loop = \React\EventLoop\Factory::create();    
         }
         $this->loop = &$loop;
+    }
+
+    public function bootstrap(): self
+    {
         $controller_dir = __DIR__ . DIRECTORY_SEPARATOR . "Controllers";
-        $this->addControllers($controller_dir);
+        $this->withControllers($controller_dir);
+        $this->router->bootstrap();
+        return $this;
     }
 
     public function setPort(int $port): void
@@ -81,7 +87,7 @@ class Server
      * @param string $controller_dir
      * @return self
      */
-    public function addControllers(string $controller_dir): self
+    public function withControllers(string $controller_dir): self
     {
         $jsonp = $this->jsonp;
         $build = function(array $classes) use ($jsonp): void
@@ -119,9 +125,10 @@ class Server
         $this->jsonp = false;
     }
 
-    public function withAdditionalRoutes(string $directory): self
+    public function withRoutes(string $directory): self
     {
-        $this->router->initRoutes($directory);
+        if(file_exists($directory))
+            $this->router->init($directory);
         return $this;
     }
 
@@ -129,7 +136,7 @@ class Server
     {
         $this->middlewares[] = $middleware;
     }
-
+    
     public function serve(bool $blocking = true): void
     {
         $this->middlewares[] = $this->router->compile($this->controllers);

@@ -9,6 +9,6 @@ echo "Graph:".(string) $kernel->graph()->id()."\n";
 echo "Founder:".(string) $kernel->founder()->id()."\n";
 
 $server = new \Pho\Server\Rest\Server($kernel);
-$server->setPort(1337);
+$server->bootstrap()->setPort(1337);
 //eval(\Psy\sh());
 $server->serve();
