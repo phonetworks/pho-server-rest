@@ -33,6 +33,7 @@ class Server
     protected $formable_nodes = [];
     protected $jsonp = false;
     protected $middlewares=[];
+    protected $host = "0.0.0.0";
 
     public function __construct(Kernel &$kernel, ?LoopInterface &$loop = null)
     {
@@ -55,6 +56,11 @@ class Server
     public function setPort(int $port): void
     {
         $this->port = $port;
+    }
+
+    public function setHost(string $host): void
+    {
+        $this->host = $host;
     }
 
     public function apiVersion(): string
@@ -143,7 +149,8 @@ class Server
         $server = new \React\Http\Server(
             $this->middlewares
         );
-        $socket = new \React\Socket\Server($this->port, $this->loop);
+        $uri = sprintf("%s:%s", $this->host, (string) $this->port);
+        $socket = new \React\Socket\Server($uri, $this->loop);
         $server->listen($socket);
         if($blocking)
             $this->loop->run();
