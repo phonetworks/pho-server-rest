@@ -138,9 +138,10 @@ class Server
         return $this;
     }
 
-    public function withMiddleware(/*\Object*/ $middleware)
+    public function withMiddleware(/*\Object*/ $middleware): self
     {
         $this->middlewares[] = $middleware;
+        return $this;
     }
 
     public function serve(bool $blocking = true): void
