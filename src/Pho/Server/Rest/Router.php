@@ -90,7 +90,7 @@ class Router
      * @param array $disalloweds // future: [0=>PROTOCOL, 1=>PATH]
      * @return self
      */
-    public function disableRoutesAllBut(array $disalloweds): self
+    public function disableRoutesExcept(array $disalloweds): self
     {
         foreach($this->routes as $controller=>$routes)
         {

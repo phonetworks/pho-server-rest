@@ -22,3 +22,7 @@
 
 * API changes; You must use the `bootstrap` call to prepare the routes and controllers.
 * addControllers now called withControllers
+
+## 3.3 to 3.4
+
+* added disableRoutes and disableRoutesExcept methods to Router.php
