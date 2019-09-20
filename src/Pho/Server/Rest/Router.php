@@ -59,6 +59,50 @@ class Router
         }
     }
 
+    /**
+     * Disable Routes
+     * 
+     * For now it does not discriminate the protocol
+     * just looks at the path information.
+     *
+     * @param array 
+     * @return self
+     */
+    public function disableRoutes(array $disalloweds): self
+    {
+        foreach($this->routes as $controller=>$routes)
+        {
+            foreach($routes as $k=>$route)
+            {
+                if(in_array($route[1], $disalloweds)) {
+                    unset($this->routes[$controller][$k]);
+                }                
+            }
+        }
+    }
+
+    /**
+     * Disable Routes
+     * 
+     * For now it does not discriminate the protocol
+     * just looks at the path information.
+     *
+     * @param array $disalloweds // future: [0=>PROTOCOL, 1=>PATH]
+     * @return self
+     */
+    public function disableRoutesAllBut(array $disalloweds): self
+    {
+        foreach($this->routes as $controller=>$routes)
+        {
+            foreach($routes as $k=>$route)
+            {
+                if(!in_array($route[1], $disalloweds)) {
+                    unset($this->routes[$controller][$k]);
+                }                
+            }
+        }
+    }
+
     public function compile(array $controllers): self
     {
         $this->controllers = $controllers;
