@@ -152,6 +152,7 @@ class Server
         );
         $uri = sprintf("%s:%s", $this->host, (string) $this->port);
         $socket = new \React\Socket\Server($uri, $this->loop);
+        error_log("Starting on {$uri}");
         $server->listen($socket);
         if($blocking)
             $this->loop->run();
