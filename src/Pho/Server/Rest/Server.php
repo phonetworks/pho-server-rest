@@ -53,6 +53,11 @@ class Server
         return $this;
     }
 
+    public function port(): int
+    {
+        return $this->port;
+    }
+
     public function setPort(int $port): void
     {
         $this->port = $port;
