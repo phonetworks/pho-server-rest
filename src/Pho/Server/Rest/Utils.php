@@ -11,13 +11,13 @@ class Utils
         'Charset'      => 'utf-8'
     ];
 
-    public static function adminLocked(): boolean
+    public static function adminLocked(): bool
     {
         $admin_lock = getenv("ADMIN_LOCK");
         return ($admin_lock === 1);
     }
 
-    public static function isAdmin(ServerRequestInterface $request): boolean
+    public static function isAdmin(ServerRequestInterface $request): bool
     {
         $admin_key = getenv("ADMIN_KEY");
 
@@ -37,18 +37,5 @@ class Utils
 
         return ($digest==$verify);
     }
-
-    public static function failAdmin(): Response
-    {
-        $response = new Response(
-            400,
-            static::HEADERS
-        );
-
-        $response->getBody()->write(
-            json_encode(["success" =>  false, "reason" => "Admin Digest Required"])
-        );
-        
-        return $response;
-    }
+    
 }
