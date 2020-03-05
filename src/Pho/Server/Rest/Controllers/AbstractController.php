@@ -13,14 +13,11 @@ namespace Pho\Server\Rest\Controllers;
 
 use React\Http\Response;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Pho\Server\Rest\Utils;
 
 abstract class AbstractController
 {
-
-    const HEADERS = [
-        'Content-Type' => 'application/json',
-        'Charset'      => 'utf-8'
-    ];
 
     protected $kernel;
     protected $jsonp = false;
@@ -39,6 +36,37 @@ abstract class AbstractController
     {
         $this->jsonp = false;
     }
+
+    protected function isAuthenticated(ServerRequestInterface $request): boolean
+    {
+        if(!$request->hasHeader('Authentication'))
+            return false;
+
+        $path = strtolower($request->getUri()->getPath());
+        $method = strtoupper($request->getMethod());
+        $header = trim($request->getHeader('Authentication')[0]);
+
+        if(!preg_match('/^hmac (.+?)\:(.+)$/i', $header, $matches))
+            return false;
+
+        $username = $matches[1];
+        $digest = $matches[2];
+
+        //error_log($username);
+        //error_log($digest);
+
+        $res = $this->kernel->index()->query("MATCH (n) WHERE n.Username = {username} RETURN n.Password", ["username"=>$username]);
+        $password = $res->results();
+        //error_log(print_r($password, true));
+        if(!\is_array($password)||count($password)!=1)
+            return false;
+        $password = $password[0]['n.Password'];
+        //error_log($password);
+        $verify = base64_encode(hash_hmac("sha256", "{$method}+{$path}", $password));
+        //error_log($verify);
+        return ($digest==$verify);
+
+    }
     
     protected function getWriteMethod(): string
     {
@@ -50,7 +78,7 @@ abstract class AbstractController
         if(is_null($response)) {
             $response = new Response(
                 200,
-                self::HEADERS
+                Utils::HEADERS
             );
         }
         
@@ -66,7 +94,7 @@ abstract class AbstractController
         if(is_null($response)) {
             $response = new Response(
                 $code,
-                self::HEADERS
+                Utils::HEADERS
             );
         }
 
@@ -91,6 +119,11 @@ abstract class AbstractController
         }
         
         return $response;
+    }
+
+    protected function failAdminRequired($response): Response
+    {
+        return $this->fail($response, "Admin Digest Required", 400);
     }
 
 

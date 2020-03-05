@@ -13,6 +13,7 @@ namespace Pho\Server\Rest;
 
 use Pho\Kernel\Kernel;
 use React\EventLoop\LoopInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * The async/event-driven REST server daemon

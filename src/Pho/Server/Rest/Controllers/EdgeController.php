@@ -13,12 +13,16 @@ namespace Pho\Server\Rest\Controllers;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Pho\Server\Rest\Utils;
 
 class EdgeController extends AbstractController 
 {
 
     public function get(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if((int) $uuid[0] < 6) {
             return $this->fail();
         }

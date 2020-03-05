@@ -14,6 +14,7 @@ namespace Pho\Server\Rest\Controllers;
 use Pho\Lib\Graph\ID;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Pho\Server\Rest\Utils;
 
 class CypherController extends AbstractController 
 {
@@ -23,6 +24,8 @@ class CypherController extends AbstractController
 
     public function matchNodes(ServerRequestInterface $request, ResponseInterface $response)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
         //error_log("matching nodes");
         //$response->writeJson(["ok"=>"nene"])->end();
         //return; 
@@ -63,6 +66,8 @@ class CypherController extends AbstractController
 
     public function matchEdges(ServerRequestInterface $request, ResponseInterface $response)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
         //error_log("matching edges");
         //$response->writeJson(["ok"=>"dede"])->end();
         //return; 

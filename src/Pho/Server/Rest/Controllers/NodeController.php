@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Stringy\StaticStringy;
 use Pho\Lib\Graph\EntityInterface;
+use Pho\Server\Rest\Utils;
 
 class NodeController extends AbstractController 
 {
@@ -23,6 +24,9 @@ class NodeController extends AbstractController
 
     public function get(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if((int) $uuid[0] > 5) {
             return $this->fail();
         }
@@ -46,6 +50,9 @@ class NodeController extends AbstractController
 
     private function getEdges(string $type="all", ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
@@ -77,6 +84,9 @@ class NodeController extends AbstractController
 
     private function getDirectionalEdges(string $type="from", ServerRequestInterface $request, ResponseInterface $response, string $uuid1, string $uuid2)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if(!isset($this->cache[$uuid1])) {
             try {
                 $res = $this->kernel->gs()->node($uuid1);
@@ -124,6 +134,9 @@ class NodeController extends AbstractController
 
     public function getGetterEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
@@ -154,6 +167,9 @@ class NodeController extends AbstractController
 
     public function getSetterEdges(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
@@ -183,6 +199,9 @@ class NodeController extends AbstractController
 
     public function getEdgesByClass(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $edge)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);
@@ -251,6 +270,9 @@ class NodeController extends AbstractController
 
     public function createEdge(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $edge)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         if(!isset($this->cache[$uuid])) {
             try {
                 $res = $this->kernel->gs()->node($uuid);

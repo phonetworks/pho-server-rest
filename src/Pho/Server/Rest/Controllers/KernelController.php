@@ -13,6 +13,7 @@ namespace Pho\Server\Rest\Controllers;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Pho\Server\Rest\Utils;
 
 class KernelController extends AbstractController
 {
@@ -20,6 +21,10 @@ class KernelController extends AbstractController
     
     public function getStatic(ServerRequestInterface $request, ResponseInterface $response, string $method)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
+        //$this->isAuthenticated($request);
         if(!in_array($method, self::STATIC_METHODS)) {
             error_log("problem!!");
             return $this->fail();
@@ -33,6 +38,9 @@ class KernelController extends AbstractController
 
     public function createActor(ServerRequestInterface $request, ResponseInterface $response)
     {
+        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+            return $this->failAdminRequired($response);
+
         $actor_class = "";
         $default_objects = $this->kernel->config()->default_objects->toArray();
         if(isset($default_objects["actor"]))
