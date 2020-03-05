@@ -8,6 +8,10 @@
  * 
  */
 
-return array(
-    ['GET', '/edge/{uuid}',"get"]
-);
+use Pho\Server\Rest\Utils;
+
+$res = [];
+if(Utils::isAllowed("EdgeController::get"))
+    $res[] = ['GET', '/edge/{uuid}',"get"];
+
+return $res;

@@ -24,7 +24,7 @@ class CypherController extends AbstractController
 
     public function matchNodes(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
         //error_log("matching nodes");
         //$response->writeJson(["ok"=>"nene"])->end();
@@ -66,7 +66,7 @@ class CypherController extends AbstractController
 
     public function matchEdges(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
         //error_log("matching edges");
         //$response->writeJson(["ok"=>"dede"])->end();

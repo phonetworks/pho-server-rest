@@ -6,7 +6,13 @@
  * convert Router.php into this.
  * 
  */
-return array(
-    ['GET', '/{method:.+}',"getStatic"],
-    ['POST', '/actor',"createActor"]
-);
+
+use Pho\Server\Rest\Utils;
+
+$res = [];
+if(Utils::isAllowed("KernelController::getStatic"))
+    $res[] = ['GET', '/{method:.+}',"getStatic"];
+if(Utils::isAllowed("KernelController::createActor"))
+    $res[] = ['POST', '/actor',"createActor"];
+
+return $res;

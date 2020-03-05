@@ -7,7 +7,12 @@
  * 
  */
 
-return array(
-    ['GET', '/edges', "matchEdges"],
-    ['GET', '/nodes', "matchNodes"]
-);
+use Pho\Server\Rest\Utils;
+
+$res = [];
+if(Utils::isAllowed("CypherController::matchEdges"))
+    $res[] = ['GET', '/edges', "matchEdges"];
+if(Utils::isAllowed("CypherController::matchNodes"))
+    $res[] = ['GET', '/nodes', "matchNodes"];
+
+return $res;

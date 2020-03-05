@@ -20,7 +20,7 @@ class EntityController extends AbstractController
 
     public function delete(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         try {
@@ -36,7 +36,7 @@ class EntityController extends AbstractController
 
     public function getAttributes(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         if(!isset($this->cache[$uuid])) {
@@ -54,7 +54,7 @@ class EntityController extends AbstractController
 
     public function getAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         if(!isset($this->cache[$uuid])) {
@@ -74,7 +74,7 @@ class EntityController extends AbstractController
 
     public function setAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         if(!isset($this->cache[$uuid])) {
@@ -98,7 +98,7 @@ class EntityController extends AbstractController
 
     public function setAttribute_POST()
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         return call_user_func_array([ $this, 'setAttribute' ], func_get_args());
@@ -138,7 +138,7 @@ class EntityController extends AbstractController
 
     public function deleteAttribute(ServerRequestInterface $request, ResponseInterface $response, string $uuid, string $key)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         if(!isset($this->cache[$uuid])) {

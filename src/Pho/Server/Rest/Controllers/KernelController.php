@@ -21,7 +21,7 @@ class KernelController extends AbstractController
     
     public function getStatic(ServerRequestInterface $request, ResponseInterface $response, string $method)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         //$this->isAuthenticated($request);
@@ -38,7 +38,7 @@ class KernelController extends AbstractController
 
     public function createActor(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         $actor_class = "";

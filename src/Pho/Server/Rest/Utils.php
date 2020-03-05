@@ -11,10 +11,27 @@ class Utils
         'Charset'      => 'utf-8'
     ];
 
-    public static function adminLocked(): bool
+    public static function isAllowed(string $key): bool
+    {
+        $disallowed = getenv("DISALLOWED_ROUTES");
+        if(empty($disallowed))
+            return true;
+        $disallowed = explode("&", $disallowed);
+        return !\in_array($key, $disallowed);
+    }
+
+    public static function adminLocked(string $key): bool
     {
         $admin_lock = getenv("ADMIN_LOCK");
-        return ($admin_lock === 1);
+        if ($admin_lock === 1) 
+            return true;
+
+        $protected = getenv("ADMIN_PROTECTED_ROUTES");
+        if(empty($protected))
+            return true;
+        $protected = explode("&", $protected);
+        return \in_array($key, $protected);
+
     }
 
     public static function isAdmin(ServerRequestInterface $request): bool

@@ -20,7 +20,7 @@ class EdgeController extends AbstractController
 
     public function get(ServerRequestInterface $request, ResponseInterface $response, string $uuid)
     {
-        if(Utils::adminLocked()&&!Utils::isAdmin($request)) 
+        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
 
         if((int) $uuid[0] < 6) {
