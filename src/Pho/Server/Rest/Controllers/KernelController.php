@@ -21,10 +21,12 @@ class KernelController extends AbstractController
     
     public function getStatic(ServerRequestInterface $request, ResponseInterface $response, string $method)
     {
+        error_log("Emre1");
         if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
             return $this->failAdminRequired($response);
-
+        error_log("Emre2");
         //$this->isAuthenticated($request);
+        error_log("method is ".$method);
         if(!in_array($method, self::STATIC_METHODS)) {
             error_log("problem!!");
             return $this->fail();

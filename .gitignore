@@ -6,3 +6,4 @@ dump.rdb
 /tests/logs/
 .vagrant
 *.log
+.env
