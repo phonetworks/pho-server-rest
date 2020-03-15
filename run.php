@@ -16,6 +16,5 @@ echo "Founder:".(string) $kernel->founder()->id()."\n";
 echo "Mode: ".(string) getenv("ADMIN_KEY")."\n";
 
 $server = new \Pho\Server\Rest\Server($kernel);
-$server->bootstrap()->setPort(1337);
-//eval(\Psy\sh());
+$server->port(1337);
 $server->serve();

@@ -10,7 +10,7 @@ Pho-Server-Rest does not rely on a third party HTTP Server such as [NGINX](https
 
 ## Requirements
 
-* PHP 7.1+
+* PHP 7.2+
 * [Composer](https://getcomposer.org/)
 * [Git](https://git-scm.com/)
 
