@@ -26,3 +26,9 @@
 ## 3.3 to 3.4
 
 * added disableRoutes and disableRoutesExcept methods to Router.php
+
+## 3.4 to 4.0
+
+* Completely revamped API
+* Session & CORS Support
+* /login and /signup methods added

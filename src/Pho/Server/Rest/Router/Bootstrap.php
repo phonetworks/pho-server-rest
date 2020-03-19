@@ -16,8 +16,6 @@ class Bootstrap {
     protected $jsonp = false;
 
     protected $collector; // RouteCollector $routes
-    protected $store = []; 
-    protected $selected = [];
     protected $controllers = [];
 
     public function __construct(Kernel $kernel)
@@ -25,7 +23,6 @@ class Bootstrap {
         $this->kernel = $kernel;
         $this->collector = new RouteCollector(new Std, new GroupCountBasedDataGenerator);
         $this->startControllers()->startRoutes();
-        $this->bootstrap();
     }
 
     private function startControllers(): self
@@ -79,9 +76,10 @@ class Bootstrap {
         return str_replace("{uuid}", "{uuid:[0-9a-fA-F]{32}}", $path);
     }
 
-    protected function bootstrap(): void
+    public function bootstrap(): self
     {
         $this->dispatcher = new GroupCountBasedDispatcher($this->collector->getData());
+        return $this;
     }
 
 }

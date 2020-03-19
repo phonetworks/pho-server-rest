@@ -13,6 +13,10 @@ namespace Pho\Server\Rest\Router;
 
 class Router extends Invoke
 {
+
+    protected $store = []; 
+    protected $selected = [];
+
     protected static function key(string $method, string $path): string
     {
         return sprintf("%s:%s", strtoupper($method), strtolower($path));
@@ -61,12 +65,12 @@ class Router extends Invoke
 
     public function list(): array
     {
-
+        return $this->selected;
     }
 
-    public function print(): string
+    public function print(): void
     {
-
+        print_r($this->selected);
     }
 
 }

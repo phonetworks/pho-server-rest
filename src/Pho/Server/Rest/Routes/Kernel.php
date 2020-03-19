@@ -11,7 +11,11 @@ use Pho\Server\Rest\Utils;
 
 $res = [];
 if(Utils::isAllowed("KernelController::getStatic"))
-    $res[] = ['GET', '/{method:.+}',"getStatic"];
+    $res[] = ['GET', '/{method:founder}',"getStatic"];
+if(Utils::isAllowed("KernelController::getStatic"))
+    $res[] = ['GET', '/{method:space}',"getStatic"];
+if(Utils::isAllowed("KernelController::getStatic"))
+    $res[] = ['GET', '/{method:graph}',"getStatic"];
 if(Utils::isAllowed("KernelController::createActor"))
     $res[] = ['POST', '/actor',"createActor"];
 

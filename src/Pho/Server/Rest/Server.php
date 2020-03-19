@@ -35,6 +35,14 @@ class Server
     protected $jsonp = false;
     protected $middlewares=[];
     protected $host = "0.0.0.0";
+    protected $cors = [
+        'allow_credentials' => true,
+        'allow_origin'      => ["*"],
+        'allow_methods'     => ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH'],
+        'allow_headers'     => ['DNT','X-Custom-Header','Keep-Alive','User-Agent','X-Requested-With','If-Modified-Since','Cache-Control','Content-Type','Content-Range','Range', 'Origin', 'Accept', 'Authorization'],
+        'expose_headers'    => ['DNT','X-Custom-Header','Keep-Alive','User-Agent','X-Requested-With','If-Modified-Since','Cache-Control','Content-Type','Content-Range','Range', 'Origin', 'Accept', 'Authorization'],
+        'max_age'           => 60 * 60 * 24 * 14, // preflight request is valid for 14 days
+    ];
 
     public function __construct(Kernel &$kernel, ?LoopInterface &$loop = null)
     {
@@ -44,7 +52,6 @@ class Server
             $loop = \React\EventLoop\Factory::create();    
         }
         $this->loop = &$loop;
-        
     }
 
     public function port(int $port = 0): int
@@ -74,11 +81,22 @@ class Server
         return $this;
     }
 
+    public function cors(?array $params = null): array
+    {
+        if(!is_null($params))
+            $this->cors = array_merge($this->cors, $params);
+        return $this->cors;
+    }
+
+    public function routes(): Router\Router
+    {
+        return $this->router;
+    }
+
     public function serve(bool $blocking = true): void
     {
-        $this->middlewares[] = $this->router;
         $server = new \React\Http\Server(
-            $this->middlewares
+            array_merge($this->middlewares, [$this->router->bootstrap()])
         );
         $uri = sprintf("%s:%s", $this->host, (string) $this->port);
         $socket = new \React\Socket\Server($uri, $this->loop);

@@ -12,7 +12,7 @@
 namespace Pho\Server\Rest\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Pho\Server\Rest\Server;
+use Pho\Server\Rest\{Server, Utils};
 use React\Http\Response;
 use FastRoute\Dispatcher;
 
@@ -44,30 +44,39 @@ class Invoke extends Bootstrap
             case Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
-                $this->kernel->logger()->info("Found: ".$handler . " --- ". print_r($vars, true));
+                //$this->kernel->logger()->info("Found: ".$handler . " --- ". print_r($vars, true));
                 // ... call $handler with $vars
                 // @todo This must be implemented
-                list($controllerName, $methodName) = explode('::', $routeInfo[1]);
-                if (null === $controller = $this->controllers[$controllerName] ?? null) {
-                    error_log("Controller $controllerName not found");
-                    return $this->controllers['kernel']->fail();
+                if(is_string($routeInfo[1])) {
+                    list($controllerName, $methodName) = explode('::', $routeInfo[1]);
+                    if (null === $controller = $this->controllers[$controllerName] ?? null) {
+                        error_log("Controller $controllerName not found");
+                        return $this->controllers['kernel']->fail();
+                    }
+                    if (! method_exists($controller, $methodName)) {
+                        error_log("Method $methodName does not exist in controller $controllerName");
+                        return $this->controllers['kernel']->fail();
+                    }
+                    $response = new Response;
+                    $response = call_user_func_array(
+                        [ 
+                            $controller->setExceptionHandler($response), 
+                            $methodName 
+                        ], 
+                        array_merge([ $request, $response ], $vars)
+                    );
+                }   
+                else {
+                    $response = new Response;
+                    $response = call_user_func_array(
+                        $routeInfo[1], 
+                        array_merge([ $request, $response ], $vars)
+                    );
                 }
-                if (! method_exists($controller, $methodName)) {
-                    error_log("Method $methodName does not exist in controller $controllerName");
-                    return $this->controllers['kernel']->fail();
-                }
-                $response = new Response;
-                $response = call_user_func_array(
-                    [ 
-                        $controller->setExceptionHandler($response), 
-                        $methodName 
-                    ], 
-                    array_merge([ $request, $response ], $vars)
-                );
                 break;
         }
 
-        $response = $response->withHeader('Server', Server::NAME);
+        $response = Utils::injectHeaders($response);
 
         return $response;
     }

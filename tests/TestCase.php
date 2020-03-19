@@ -16,8 +16,24 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected $client;
     protected $founder_id = '';
     protected $faker;
+    protected $server;
+    protected $loop;
 
-    const HOST = "http://localhost:1337";
+    protected static $HOST = "http://localhost:1337";
+
+    protected function newServer()
+    {
+        $this->loop = \React\EventLoop\Factory::create();
+        $this->loop->addTimer(3.0, function () {
+            $this->loop->stop();
+        });
+        $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+        $dotenv->load();
+        include(dirname(__DIR__) . "/kernel/kernel.php");
+        $this->server = new \Pho\Server\Rest\Server($kernel, $this->loop);
+        $this->server->port(1338);
+        $this->server->serve();
+    }
 
     public function setUp()
     {
@@ -63,7 +79,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function get(string $path, bool $headers = false)
     {
-        $res = $this->client->request('GET', self::HOST . $path);
+        $res = $this->client->request('GET', static::$HOST . $path);
         if ($headers) {
             return $res;
         }
@@ -74,7 +90,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function post(string $path, array $postData, bool $headers = false)
     {
-        $res = $this->client->request('POST', self::HOST . $path, [ \GuzzleHttp\RequestOptions::JSON => $postData]);
+        $res = $this->client->request('POST', static::$HOST . $path, [ \GuzzleHttp\RequestOptions::JSON => $postData]);
         if ($headers) {
             return $res;
         }
@@ -85,7 +101,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function delete(string $path, array $postData = [], bool $headers = false)
     {
-        $res = $this->client->request('DELETE', self::HOST . $path, ['form_params' => $postData]);
+        $res = $this->client->request('DELETE', static::$HOST . $path, ['form_params' => $postData]);
         if ($headers) {
             return $res;
         }
