@@ -7,3 +7,4 @@ dump.rdb
 .vagrant
 *.log
 .env
+*.swp

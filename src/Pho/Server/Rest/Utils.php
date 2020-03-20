@@ -8,9 +8,35 @@ use Psr\Http\Message\ServerRequestInterface;
 class Utils
 {
     const HEADERS = [
+        'Server' => Server::NAME,
         'Content-Type' => 'application/json',
-        'Charset'      => 'utf-8'
+        'Charset'      => 'UTF-8',
+        "Access-Control-Allow-Origin" => "*",
+        'Access-Control-Allow-Credentials' => "true",
+        "Access-Control-Expose-Headers" => "DNT",
+        "Access-Control-Expose-Headers" => "X-Custom-Header",
+        "Access-Control-Expose-Headers" => "Keep-Alive",
+        "Access-Control-Expose-Headers" => "User-Agent",
+        "Access-Control-Expose-Headers" => "X-Requested-With",
+        "Access-Control-Expose-Headers" => "If-Modified-Since",
+        "Access-Control-Expose-Headers" => "Cache-Control",
+        "Access-Control-Expose-Headers" => "Content-Type",
+        "Access-Control-Expose-Headers" => "Content-Range",
+        "Access-Control-Expose-Headers" => "Range",
+        "Access-Control-Expose-Headers" => "Origin",
+        "Access-Control-Expose-Headers" => "Accept",
+        "Access-Control-Expose-Headers" => "Authorization",
+        "Access-Control-Allow-Headers" => 'GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH',
+        "Access-Control-Max-Age" => 60 * 60 * 24 * 14, // preflight request is valid for 14 days
     ];
+
+    public static function injectHeaders(Response $response): Response
+    {
+        foreach(static::HEADERS as $key=>$value) {
+            $response = $response->withHeader($key, $value);
+        }
+        return $response;
+    }
 
     public static function isAllowed(string $key): bool
     {

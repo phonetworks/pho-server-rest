@@ -10,7 +10,7 @@ Pho-Server-Rest does not rely on a third party HTTP Server such as [NGINX](https
 
 ## Requirements
 
-* PHP 7.1+
+* PHP 7.2+
 * [Composer](https://getcomposer.org/)
 * [Git](https://git-scm.com/)
 
@@ -53,13 +53,15 @@ To run the server, you must execute the [run.php](https://github.com/phonetworks
 require "vendor/autoload.php";
 include("PATH/TO/YOUR/KERNEL");
 $server = new \Pho\Server\Rest\Server($kernel);
-$server->bootstrap()->setPort(8080);
+$server->bootstrap()->port(8080);
 $server->serve();
 ```
 
 Please note, as of 3.3.0, you must use the `bootstrap` call to prepare the routes and controllers to warm up.
 before the server is run with the `serve` command. In case you'd like to skip the routes, you may skip the
 `bootstrap` phase and install your own routers and controllers via `withControllers` and `withRoutes` methods.
+
+## Usage
 
 ## Unit Testing
 
