@@ -9,7 +9,7 @@ use FastRoute\RouteParser\Std;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 
-class Bootstrap {
+class Bootstrap extends Foundation {
 
     protected $kernel;
     protected $dispatcher; 

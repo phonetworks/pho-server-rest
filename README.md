@@ -57,15 +57,12 @@ $server->bootstrap()->port(8080);
 $server->serve();
 ```
 
-Please note, as of 3.3.0, you must use the `bootstrap` call to prepare the routes and controllers to warm up.
-before the server is run with the `serve` command. In case you'd like to skip the routes, you may skip the
-`bootstrap` phase and install your own routers and controllers via `withControllers` and `withRoutes` methods.
-
 ## Usage
 
 ```php
 /**
  * Returns the routes object to manipulate the behaviour of the server
+ * @return self
  */
 $server->routes();
 
@@ -80,6 +77,7 @@ $server->routes()->all();
  * @param string $method HTTP Method, like GET, PUT, DELETE
  * @param string $path HTTP Path like /some_path
  * @param callable $func Function to call with arguments; $request (\Psr\Http\Message\ServerRequestInterface), $response (\React\Http\Response)
+ * @return void
  */
 $server->routes()->add("GET", "/path/{arg:[0-9]+}", function($request, $response, $arg) {
 
@@ -87,11 +85,13 @@ $server->routes()->add("GET", "/path/{arg:[0-9]+}", function($request, $response
 
 /**
  * Select no route
+ * @return self
  */
 $server->routes()->none()
 
 /**
  * Select all routes, minus the defined ones.
+ * @return self
  */
 $server->routes()->all()->but(...)
 
@@ -101,22 +101,28 @@ $server->routes()->all()->but(...)
 $server->routes()->only(...)
 
 /**
- * Only admin can access the selected routes
+ * Only admins can access the selected routes
+ * The opposite is: `unlock()`
+ * @return void
  */
-$server->routes->lock()
+$server->routes()->only(...)->lock()
 
 /**
  * No one can access the selected routes
+ * The opposite is: `enable()`
+ * @return void
  */
-$server->routes->disallow()
+$server->routes()->only(...)->disable()
 
 ```
 
 ## Sessions
 
-Session::depend
+```php
+Session::depend()
 Session:destroy()
 Session:begin()
+```
 
 ## Unit Testing
 

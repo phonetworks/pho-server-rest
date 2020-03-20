@@ -11,57 +11,11 @@
 
 namespace Pho\Server\Rest\Router;
 
-class Router extends Invoke
+class Router extends Select
 {
 
-    protected $store = []; 
-    protected $selected = [];
-
-    protected static function key(string $method, string $path): string
-    {
-        return sprintf("%s:%s", strtoupper($method), strtolower($path));
-    }
-
-    public function add(string $method = 'GET', string $path, /*?callable*/ $next)
-    {
-        $key = self::key($method, $path);
-        $this->store[$key] = [$method, $path, $next];
-        $this->selected[$key] = [$method, $path, $next];
-        $this->collector->addRoute($method, $path, $next);
-    }
-
-    public function all(): self
-    {
-        $this->selected = $this->store;
-        return $this;
-    }
-
-    public function none(): self
-    {
-        $this->selected = [];
-        return $this;
-    }
-
-    public function only(...$routes): self
-    {
-        $this->none();
-        foreach($routes as $route) {
-            $key = self::key($route[0], $route[1]);
-            if(isset($this->store[$key]))
-                $this->selected[$key] = $this->store[$key];
-        }
-        return $this;
-    }
-
-    public function but(...$routes): self
-    {
-        foreach($routes as $route) {
-            $key = self::key($route[0], $route[1]);
-            if(isset($this->selected[$key]))
-                unset($this->selected[$key]);
-        }
-        return $this;
-    }
+    protected $locked = [];
+    protected $disabled = [];
 
     public function list(): array
     {
@@ -70,7 +24,75 @@ class Router extends Invoke
 
     public function print(): void
     {
-        print_r($this->selected);
+        print_r($this->export());
+    }
+
+    public function export(): array
+    {
+        return [
+            "All" => $this->store,
+            "Selected" => $this->selected,
+            "Locked" => $this->locked,
+            "Disabled" => $this->disabled
+        ];
+    }
+
+    /**
+     * If enabled, selected routes can be accessed by admins only.
+     */
+    public function lock(): void
+    {
+        $this->locked = array_merge($this->locked, $this->selected);
+    }
+
+    /**
+     * If enabled, selected routes can be accessed by anyone
+     */
+    public function unlock(): void
+    {
+        foreach($this->selected as $key=>$value) {
+            if(isset($this->locked[$key])) {
+                unset($this->locked[$key]);
+            }
+        }
+    }
+
+    /**
+     * Check if the selected route is already locked
+     * @return boolean
+     */
+    protected function locked(string $key): boolean
+    {
+        return isset($this->locked[$key]);
+    }
+
+    /**
+     * Check if the selected route is already disabled
+     * @return boolean
+     */
+    protected function disabled(string $key): boolean
+    {
+        return isset($this->disabled[$key]);
+    }
+
+    /**
+     * No one can access selected routes
+     */
+    public function disable(): void
+    {
+        $this->disabled = array_merge($this->disabled, $this->selected);
+    }
+
+    /**
+     * Those with the required privileges can access the selected routes
+     */
+    public function enable(): void
+    {
+        foreach($this->selected as $key=>$value) {
+            if(isset($this->disabled[$key])) {
+                unset($this->disabled[$key]);
+            }
+        }
     }
 
 }

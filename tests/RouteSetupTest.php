@@ -12,7 +12,7 @@
 class RouteSetupTest extends \PHPUnit\Framework\TestCase 
 {
 
-    const ROUTE_COUNT = 20;
+    const ROUTE_COUNT = 25;
 
     public function testBasic() {
         $loop = \React\EventLoop\Factory::create();
@@ -48,5 +48,30 @@ class RouteSetupTest extends \PHPUnit\Framework\TestCase
         $routes = $server->routes();
         $all = $routes->all();
         $this->assertCount(self::ROUTE_COUNT+1, $all->list());
+        return $server;
+    }
+
+    /**
+     * @depends testNewRoute
+     */
+    public function testRouteFunctions($server)
+    {
+        $rand = rand(1, self::ROUTE_COUNT-3);
+        $routes = $server->routes();
+        $all = $routes->all();
+        $all_values = array_values($all->list());
+        $all->but($all_values[$rand], $all_values[$rand+1])->lock();
+        $server->routes()->only($all_values[$rand+2])->disable();
+        $exported = $server->routes()->export();
+        $this->assertCount(1, $exported["Disabled"]);
+        $locked_count = self::ROUTE_COUNT+1-2; // +1 (new route) -2 (but...)
+        $this->assertCount($locked_count, $exported["Locked"]);
+        $all->only($all_values[$rand-1])->unlock();
+        $exported = $server->routes()->export();
+        $this->assertCount($locked_count-1, $exported["Locked"]);
+        $server->routes()->only($all_values[$rand+2])->enable();
+        $exported = $server->routes()->export();
+        $this->assertCount(0, $exported["Disabled"]);
+
     }
 }

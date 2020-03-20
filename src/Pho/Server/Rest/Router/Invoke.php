@@ -23,6 +23,7 @@ class Invoke extends Bootstrap
         echo "basladik\n";
         $method = $request->getMethod(); // GET or POST
         $path = $request->getUri()->getPath(); // the path
+        $key = static::key($method, $path);
         echo $method."\n";
         echo $path."\n";
         $routeInfo = $this->dispatcher->dispatch($method, $path);   
@@ -55,6 +56,14 @@ class Invoke extends Bootstrap
                     }
                     if (! method_exists($controller, $methodName)) {
                         error_log("Method $methodName does not exist in controller $controllerName");
+                        return $this->controllers['kernel']->fail();
+                    }
+                    if($this->disabled($key)) {
+                        error_log("Method $methodName is disabled in $controllerName");
+                        return $this->controllers['kernel']->fail();
+                    }
+                    if($this->locked($key)&&!Utils::isAdmin($request)) {
+                        error_log("Method $methodName in $controllerName requires admin priveleges");
                         return $this->controllers['kernel']->fail();
                     }
                     $response = new Response;
