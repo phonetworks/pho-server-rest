@@ -24,7 +24,7 @@ The recommended way to install pho-server-rest is through git. MacOS and most UN
 > or just download the pho-server-rest zip tarball from https://github.com/phonetworks/pho-server-rest/archive/master.zip 
 > and extract.
 
-Once the REST Server is installed, you need a Pho Kernel to run it. You can install the standard Pho Kernel simply by typing:
+Once the REST Server is installed, you need a Phở Kernel to run it. You can install the standard Phở Kernel simply by typing:
 
 ```sh
 git submodule init
@@ -63,6 +63,61 @@ before the server is run with the `serve` command. In case you'd like to skip th
 
 ## Usage
 
+```php
+/**
+ * Returns the routes object to manipulate the behaviour of the server
+ */
+$server->routes();
+
+/**
+ * Returns all existing routes
+ * @return self
+ */
+$server->routes()->all();
+
+/**
+ * Adds a new route:
+ * @param string $method HTTP Method, like GET, PUT, DELETE
+ * @param string $path HTTP Path like /some_path
+ * @param callable $func Function to call with arguments; $request (\Psr\Http\Message\ServerRequestInterface), $response (\React\Http\Response)
+ */
+$server->routes()->add("GET", "/path/{arg:[0-9]+}", function($request, $response, $arg) {
+
+});
+
+/**
+ * Select no route
+ */
+$server->routes()->none()
+
+/**
+ * Select all routes, minus the defined ones.
+ */
+$server->routes()->all()->but(...)
+
+/**
+ * Select only the defined ones.
+ */
+$server->routes()->only(...)
+
+/**
+ * Only admin can access the selected routes
+ */
+$server->routes->lock()
+
+/**
+ * No one can access the selected routes
+ */
+$server->routes->disallow()
+
+```
+
+## Sessions
+
+Session::depend
+Session:destroy()
+Session:begin()
+
 ## Unit Testing
 
 In order to run tests, make sure the REST server is running. For that, you'll need to type in `php run.php` while in the root folder, ensuring the kernel submodule was initialized and set up with the right recipe, and environment variables are properly entered.
@@ -73,7 +128,13 @@ Once the server is up and running, you may run the unit tests by typing `vendor/
 
 **How do I change the port?**
 
-By default, pho-server-rest is designed to serve through port 1337. You may change it from the file [run.php](https://github.com/phonetworks/pho-server-rest/blob/master/run.php) by changing the line that corresponds to ```$server->setPort(1337);```
+By default, pho-server-rest is designed to serve through port 1337. You may change it from the file [run.php](https://github.com/phonetworks/pho-server-rest/blob/master/run.php) by changing the line that corresponds to ```$server->port(1337);```
+
+**How can I use Pho Server as part of a real-time application?**
+
+Phở Server uses [React's core reactor event loop](https://github.com/reactphp/event-loop), and can work with any application that uses the same infrastructure. To achieve that, one has to construct the Phở server object with the custom event loop as the second argument; ```$server = new \Pho\Server\Rest\Server($kernel, $custom_loop);```
+
+Once the server object is initialized, you can start the event loop separately using the `serve()` call by passing the `false` argument as follows: ```$server->serve(false);```. This starts the server in a non-blocking way, so you can initialize the loop at a different point and time of your application's lifetime. 
 
 ## License
 
