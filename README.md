@@ -119,9 +119,9 @@ $server->routes()->only(...)->disable()
 ## Sessions
 
 ```php
-Session::depend()
-Session:destroy()
-Session:begin()
+Session::depend();
+Session:destroy();
+Session:begin();
 ```
 
 ## Unit Testing
