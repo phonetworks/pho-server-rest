@@ -19,10 +19,7 @@ class AuthenticationController extends AbstractController
 {
 
     public function login(ServerRequestInterface $request, ResponseInterface $response)
-    {
-        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
-            return $this->failAdminRequired($response);
-            
+    {       
         $data = $request->getQueryParams();
 
         $username = $password = "";
@@ -51,8 +48,6 @@ class AuthenticationController extends AbstractController
 
     public function logout(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
-            return $this->failAdminRequired($response);
 
         $id = Session::depend($request);
         if(is_null($id)) {
@@ -67,8 +62,6 @@ class AuthenticationController extends AbstractController
     // http://localhost:1337/signup?param1=esokullu&param2=burak@groups-inc.com&param3=123456&param4=01/15/1983&param5=&param6=http://google.com/emre.gif&param7=0
     public function signup(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
-            return $this->failAdminRequired($response);
 
         $actor_class = "";
         $default_objects = $this->kernel->config()->default_objects->toArray();

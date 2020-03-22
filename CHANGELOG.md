@@ -32,3 +32,7 @@
 * Completely revamped API
 * Session & CORS Support
 * /login and /signup methods added
+
+## 4.0 to 4.1
+
+* New native router instead of nikic/fastrouter

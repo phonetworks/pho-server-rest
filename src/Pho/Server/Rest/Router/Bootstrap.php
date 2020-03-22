@@ -4,25 +4,28 @@ namespace Pho\Server\Rest\Router;
 
 use Pho\Server\Rest\Controllers\AbstractController;
 use Pho\Kernel\Kernel;
-use FastRoute\RouteCollector;
-use FastRoute\RouteParser\Std;
-use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
-use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
+use Pho\Server\Rest\Dispatcher;
 
-class Bootstrap extends Foundation {
+class Bootstrap {
+
+    public const NOT_FOUND = 0;
+    public const FOUND = 1;
+    public const METHOD_NOT_ALLOWED = 2;
 
     protected $kernel;
-    protected $dispatcher; 
     protected $jsonp = false;
 
-    protected $collector; // RouteCollector $routes
     protected $controllers = [];
 
     public function __construct(Kernel $kernel)
     {
         $this->kernel = $kernel;
-        $this->collector = new RouteCollector(new Std, new GroupCountBasedDataGenerator);
         $this->startControllers()->startRoutes();
+    }
+
+    protected static function key(string $method, string $path): string
+    {
+        return sprintf("%s:%s", strtoupper($method), strtolower($path));
     }
 
     private function startControllers(): self
@@ -73,13 +76,7 @@ class Bootstrap extends Foundation {
     // route level.
     protected static function resolveCommonRouteScenarios(string $path): string
     {
-        return str_replace("{uuid}", "{uuid:[0-9a-fA-F]{32}}", $path);
-    }
-
-    public function bootstrap(): self
-    {
-        $this->dispatcher = new GroupCountBasedDispatcher($this->collector->getData());
-        return $this;
+        return str_replace("{uuid}", "([0-9a-fA-F]{32})", $path);
     }
 
 }

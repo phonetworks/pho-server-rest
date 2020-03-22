@@ -61,7 +61,7 @@ class Router extends Select
      * Check if the selected route is already locked
      * @return boolean
      */
-    protected function locked(string $key): boolean
+    public function locked(string $key): bool
     {
         return isset($this->locked[$key]);
     }
@@ -70,7 +70,7 @@ class Router extends Select
      * Check if the selected route is already disabled
      * @return boolean
      */
-    protected function disabled(string $key): boolean
+    public function disabled(string $key): bool
     {
         return isset($this->disabled[$key]);
     }
@@ -93,6 +93,27 @@ class Router extends Select
                 unset($this->disabled[$key]);
             }
         }
+    }
+
+    // http://blog.moagrius.com/php/php-regexrouter/
+    public function dispatch(string $method, string $url): array
+    {
+        echo $method."\n";
+        echo $url."\n";
+        print_r($this->routes);
+        $method = strtoupper($method);
+        if(!isset($this->routes[$method])) {
+            return [self::METHOD_NOT_ALLOWED];
+        }
+
+        foreach ($this->routes[$method] as $pattern => $key) {
+			if (preg_match($pattern, $url, $params)) {
+				array_shift($params);
+				return [self::FOUND, $this->store[$key][2], $params, $key]; 
+			}
+        }
+        
+        return [self::NOT_FOUND];
     }
 
 }

@@ -16,13 +16,33 @@ class Select extends Invoke
 
     protected $store = []; 
     protected $selected = [];
+    protected $routes = [];
+
+    protected function route(string $method, string $pattern, string $key): void
+    {
+        $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
+        $this->routes[\strtoupper($method)][$pattern] = $key;
+    }
 
     public function add(string $method = 'GET', string $path, /*?callable*/ $next): void
     {
         $key = self::key($method, $path);
         $this->store[$key] = [$method, $path, $next];
         $this->selected[$key] = [$method, $path, $next];
-        $this->collector->addRoute($method, $path, $next);
+        //$this->collector->addRoute($method, $path, $next);
+        $this->route($method, $path, $key);
+    }
+
+    protected function dispatch(string $uri)
+    {
+        foreach ($this->store as $pattern => $callback) {
+            $pattern = $store[1];
+            $callback = $store[2];
+            if (preg_match($pattern, $uri, $params) === 1) {
+                array_shift($params);
+                return call_user_func_array($callback, array_values($params));
+            }
+        }
     }
 
     public function all(): self

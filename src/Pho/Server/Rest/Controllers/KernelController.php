@@ -18,12 +18,35 @@ use Pho\Server\Rest\Utils;
 class KernelController extends AbstractController
 {
     const STATIC_METHODS = ["founder", "graph", "space"];
+
+    /*
+    public function callStatic(string $name, array $args)
+    {
+        if(preg_match("/^get([a-zA-Z]+)$/", $name, $matches)) {
+            $method = strtolower($matches[1]);
+            $args[] = $method;
+            return $this->getStatic(...$args);
+        }
+    }
+    */
+
+    public function getFounder(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        return $this->getStatic($request, $response, "founder");
+    }
+
+    public function getGraph(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        return $this->getStatic($request, $response, "graph");
+    }
+
+    public function getSpace(ServerRequestInterface $request, ResponseInterface $response)
+    {
+        return $this->getStatic($request, $response, "space");
+    }
     
     public function getStatic(ServerRequestInterface $request, ResponseInterface $response, string $method)
     {
-        error_log("Emre1");
-        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
-            return $this->failAdminRequired($response);
         error_log("Emre2");
         //$this->isAuthenticated($request);
         error_log("method is ".$method);
@@ -40,8 +63,6 @@ class KernelController extends AbstractController
 
     public function createActor(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if(Utils::adminLocked(__METHOD__)&&!Utils::isAdmin($request)) 
-            return $this->failAdminRequired($response);
 
         $actor_class = "";
         $default_objects = $this->kernel->config()->default_objects->toArray();

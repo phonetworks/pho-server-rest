@@ -24,4 +24,7 @@ $server->routes()->add("GET","/test", function($req, $res)
 });
 */
 
+//$server->routes()->only(["GET", '/{method:founder}'])->disable();
+//eval(\Psy\sh());
+
 $server->serve();
