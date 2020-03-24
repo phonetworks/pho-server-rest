@@ -22,9 +22,10 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Server
 {
-    const VERSION = "2.0.0";
+    
     const NAME = "PhoNetworks";
 
+    protected $version;
     protected $loop;
     protected $server;
     protected $router;
@@ -52,6 +53,7 @@ class Server
             $loop = \React\EventLoop\Factory::create();    
         }
         $this->loop = &$loop;
+        $this->version = trim(file_get_contents(dirname(dirname(dirname(dirname(__DIR__)))).DIRECTORY_SEPARATOR."VERSION"));
     }
 
     public function port(int $port = 0): int
@@ -70,7 +72,7 @@ class Server
 
     public function version(): string
     {
-        if(!preg_match("/^([0-9]+\.[0-9]+)\.[0-9]+$/", self::VERSION, $matches))
+        if(!preg_match("/^([0-9]+\.[0-9]+)\.[0-9]+$/", $this->version, $matches))
             throw new \Exception("Invalid Version");
         return $matches[1];
     }
