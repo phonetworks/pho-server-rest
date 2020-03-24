@@ -98,7 +98,7 @@ class Server
     public function serve(bool $blocking = true): void
     {
         $server = new \React\Http\Server(
-            array_merge($this->middlewares, [$this->router->bootstrap()])
+            array_merge($this->middlewares, [$this->router])
         );
         $uri = sprintf("%s:%s", $this->host, (string) $this->port);
         $socket = new \React\Socket\Server($uri, $this->loop);

@@ -53,7 +53,7 @@ To run the server, you must execute the [run.php](https://github.com/phonetworks
 require "vendor/autoload.php";
 include("PATH/TO/YOUR/KERNEL");
 $server = new \Pho\Server\Rest\Server($kernel);
-$server->bootstrap()->port(8080);
+$server->port(8080);
 $server->serve();
 ```
 
