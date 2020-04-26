@@ -60,6 +60,8 @@ $server->serve();
 ## Usage
 
 ```php
+<?php
+
 /**
  * Returns the routes object to manipulate the behaviour of the server
  * @return self
@@ -119,6 +121,8 @@ $server->routes()->only(...)->disable()
 ## Sessions
 
 ```php
+<?php
+
 Session::depend();
 Session:destroy();
 Session:begin();
